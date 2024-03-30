@@ -1,3 +1,4 @@
+import { TranslationMissingFields } from '@/app/store/useTranslationStore';
 import { Translation } from './types';
 
 export const formatJson = (json: string, tab = 2): string => {
@@ -8,7 +9,7 @@ export const formatJson = (json: string, tab = 2): string => {
   }
 };
 
-export const formatObjectToJSON = (object: Record<string, unknown>, tab: number): string => {
+export const formatObjectToJSON = (object: Record<string, unknown>, tab = 2): string => {
   return JSON.stringify(object, null, tab);
 };
 
@@ -46,8 +47,6 @@ export const getMissingTranslations = (
   return missing;
 };
 
-type TranslationMissingFields = Record<string, Record<string, string[]>>;
-
 export const getTranslationMissingFields = (translations: Translation): TranslationMissingFields => {
   const languages = Object.keys(translations);
   const missingFields: TranslationMissingFields = {};
@@ -58,7 +57,10 @@ export const getTranslationMissingFields = (translations: Translation): Translat
   languages.forEach((lang) => {
     missingFields[lang] = {};
     commonCategories.forEach((category) => {
-      missingFields[lang][category] = [];
+      missingFields[lang][category] = {
+        missing: [],
+        empty: [],
+      };
     });
   });
 
@@ -72,10 +74,12 @@ export const getTranslationMissingFields = (translations: Translation): Translat
           const otherParsedTranslation = tryParse(translations[otherLang][category] ?? '{}');
 
           fields.forEach((key) => {
-            if (!otherParsedTranslation[key]) {
-              if (!missingFields?.[otherLang]?.[category]?.includes(key)) {
-                missingFields[otherLang][category].push(key);
-              }
+            const otherField = otherParsedTranslation[key] as string;
+
+            if (otherField == null) {
+              missingFields[otherLang][category]?.missing?.push(key);
+            } else if (otherField === '') {
+              missingFields[otherLang][category]?.empty?.push(key);
             }
           });
         }

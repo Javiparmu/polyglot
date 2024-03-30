@@ -7,6 +7,7 @@ import Flag from './flag';
 import { useTranslationStore } from '@/app/store/useTranslationStore';
 import { useTranslationUpload } from '@/app/hooks/useTranslationUpload';
 import { isEmpty } from '@/lib/helpers';
+import { useMemo } from 'react';
 
 interface LanguageCollapsibleProps {
   language: string;
@@ -18,6 +19,8 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
   const { translations, missingTranslations, missingFields, setSelectedTranslation } = useTranslationStore();
 
   const { fileInputRef, onTranslationUpload, onTranslationChange } = useTranslationUpload(language, {});
+
+  const missing = useMemo(() => missingFields?.[language] || {}, [language, missingFields]);
 
   return (
     <Collapsible open={isOpen} onOpenChange={(open) => onToggle(open)} defaultOpen className="space-y-2">
@@ -47,7 +50,10 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
                   translation,
                 })
               }
-              className={`flex w-full justify-start pl-6 ${missingTranslations[language].includes(translation) ? 'text-red-500' : ''} ${!isEmpty(missingFields[language][translation]) ? 'text-orange-400' : ''}`}
+              className={`
+                flex w-full justify-start pl-6 ${missingTranslations[language].includes(translation) ? 'text-red-500' : ''}
+                ${!isEmpty(missing[translation]?.empty) || !isEmpty(missing[translation]?.missing) ? 'text-orange-400' : ''}
+              `}
             >
               {translation}
             </Button>
