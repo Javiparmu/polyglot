@@ -1,6 +1,5 @@
 import { formatJson } from '@/lib/helpers';
 import { errorToast } from '@/lib/toasts';
-import { useRef } from 'react';
 import { useTranslationStore } from '../store/useTranslationStore';
 
 interface FileUploadProps {
@@ -8,22 +7,19 @@ interface FileUploadProps {
   onError?: () => void;
 }
 
-export const useTranslationUpload = (language: string, { onSuccess, onError }: FileUploadProps) => {
+export const useTranslationUpload = ({ onSuccess, onError }: FileUploadProps) => {
   const { addTranslation } = useTranslationStore();
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const onTranslationUpload = () => {
-    fileInputRef.current?.click();
-  };
-
-  const onTranslationChange = async (event: React.ChangeEvent<HTMLInputElement>, translation: string) => {
+  const onTranslationChange = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    { language, translation }: { language: string; translation?: string },
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
     const translationName = file.name.replace('.json', '');
 
-    if (translationName !== translation) {
+    if (translation && translationName !== translation) {
       errorToast('Invalid translation name');
       return;
     }
@@ -40,5 +36,24 @@ export const useTranslationUpload = (language: string, { onSuccess, onError }: F
     }
   };
 
-  return { onTranslationUpload, onTranslationChange, fileInputRef };
+  const onMultipleTranslationsChange = (event: React.ChangeEvent<HTMLInputElement>, language: string) => {
+    const files = event.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach(async (file) => {
+      const translationName = file.name.replace('.json', '');
+      const translationData = await file.text();
+
+      try {
+        addTranslation(language, {
+          [translationName]: formatJson(translationData),
+        });
+        onSuccess?.();
+      } catch (error) {
+        onError ? onError() : errorToast('Invalid JSON file');
+      }
+    });
+  };
+
+  return { onTranslationChange, onMultipleTranslationsChange };
 };

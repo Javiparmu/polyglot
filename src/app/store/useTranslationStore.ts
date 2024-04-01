@@ -2,6 +2,7 @@ import { formatObjectToJSON, getMissingTranslations, getTranslationMissingFields
 import { Translation } from '@/lib/types';
 import { create } from 'zustand';
 import { tryParse } from '@/lib/helpers';
+import setValue from 'lodash.set';
 
 export type TranslationMissingFields = Record<string, Record<string, { missing: string[]; empty: string[] }>>;
 
@@ -49,16 +50,16 @@ export const useTranslationStore = create<TranslationStore>()((set) => ({
     }),
   addFieldToTranslation: (language, translation, field) =>
     set((state) => {
-      const newTranslations = {
-        ...state.translations,
-        [language]: {
-          ...state.translations[language],
-          [translation]: formatObjectToJSON({
-            [field]: '',
-            ...tryParse(state.translations[language][translation]),
-          }),
-        },
-      };
+      const newTranslations = { ...state.translations };
+      if (!newTranslations[language]) {
+        newTranslations[language] = {};
+      }
+
+      const translationObject = tryParse(newTranslations[language][translation]);
+
+      setValue(translationObject, field, '');
+
+      newTranslations[language][translation] = formatObjectToJSON(translationObject);
 
       return {
         translations: newTranslations,

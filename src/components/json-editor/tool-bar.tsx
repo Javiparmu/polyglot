@@ -18,13 +18,11 @@ interface FileUploaderProps {
   onFileHandle: (fileContent: File) => void;
 }
 
-// Need to fix: hover is not working
 export const FileUploader: React.FC<FileUploaderProps> = ({ onFileHandle }) => {
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const handleUploadClick = () => {
     if (inputFileRef.current) {
-      // upload the same file
       inputFileRef.current.value = '';
       inputFileRef.current.click();
     }

@@ -41,7 +41,7 @@ export const JSONEditor = ({
   const monaco = useMonaco();
   const [errors, setErrors] = useState<string[]>([]);
   const [isAutoPrettifyOn, toggleAutoPrettifyOn] = useToggle(false);
-  const [isValidJson, setIsValidJson] = useState(false);
+  const [isValidJson, setIsValidJson] = useState(true);
   const editorRef = useRef<RefObject>();
 
   const updateEditorLayout = useCallback(() => {
@@ -55,7 +55,7 @@ export const JSONEditor = ({
     const editorEl = editor._domElement;
     if (!editorEl) return;
     const { width, height } = editorEl.getBoundingClientRect();
-    // update responsive width and height
+
     editor.layout({
       width,
       height,
@@ -169,25 +169,19 @@ export const JSONEditor = ({
     editor && editor.setValue(formattedValue);
   };
 
-  useEffect(() => {
-    console.log('JSONEditor', errors, isEmpty(errors));
-  }, [errors]);
-
   return (
     <div className="h-full">
-      <div>
-        <ToolBar
-          isValidJson={isValidJson}
-          isAutoPrettifyOn={isAutoPrettifyOn}
-          onAutoPrettifyChange={toggleAutoPrettifyOn}
-          onClearClick={handleClearClick}
-          onDownloadClick={handleDownloadClick}
-          onMinifyClick={handleMinifyClick}
-          onPrettifyClick={handleEditorPrettify}
-          onUploadClick={handleUploadClick}
-          onFixClick={handleFixClick}
-        />
-      </div>
+      <ToolBar
+        isValidJson={isValidJson}
+        isAutoPrettifyOn={isAutoPrettifyOn}
+        onAutoPrettifyChange={toggleAutoPrettifyOn}
+        onClearClick={handleClearClick}
+        onDownloadClick={handleDownloadClick}
+        onMinifyClick={handleMinifyClick}
+        onPrettifyClick={handleEditorPrettify}
+        onUploadClick={handleUploadClick}
+        onFixClick={handleFixClick}
+      />
       <div
         className={cn(
           {
@@ -213,6 +207,7 @@ export const JSONEditor = ({
               verticalScrollbarSize: 0,
             },
             automaticLayout: true,
+            occurrencesHighlight: 'off',
             autoClosingBrackets: 'always',
             autoClosingQuotes: 'always',
             formatOnPaste: true,

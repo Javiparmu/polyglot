@@ -7,7 +7,8 @@ import Flag from './flag';
 import { useTranslationStore } from '@/app/store/useTranslationStore';
 import { useTranslationUpload } from '@/app/hooks/useTranslationUpload';
 import { isEmpty } from '@/lib/helpers';
-import { useMemo } from 'react';
+import { Fragment, useMemo, useRef } from 'react';
+import JsonUploader from './json-uploader';
 
 interface LanguageCollapsibleProps {
   language: string;
@@ -16,11 +17,19 @@ interface LanguageCollapsibleProps {
 }
 
 const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsibleProps) => {
-  const { translations, missingTranslations, missingFields, setSelectedTranslation } = useTranslationStore();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { fileInputRef, onTranslationUpload, onTranslationChange } = useTranslationUpload(language, {});
+  const { translations, missingTranslations, missingFields, setSelectedTranslation } = useTranslationStore();
+  const { onTranslationChange } = useTranslationUpload({});
 
   const missing = useMemo(() => missingFields?.[language] || {}, [language, missingFields]);
+
+  const onTranslationUpload = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+      fileInputRef.current.click();
+    }
+  };
 
   return (
     <Collapsible open={isOpen} onOpenChange={(open) => onToggle(open)} defaultOpen className="space-y-2">
@@ -59,9 +68,8 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
             </Button>
           ))}
         {missingTranslations[language]?.map((translation) => (
-          <div key={translation} className="flex items-center justify-between">
+          <div key={language + translation} className="flex items-center justify-between">
             <Button
-              key={translation}
               variant="ghost"
               size="sm"
               onClick={() => onTranslationUpload()}
@@ -75,8 +83,7 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
               accept=".json"
               type="file"
               className="hidden"
-              onChange={(e) => onTranslationChange(e, translation)}
-              onClick={(e) => (e.currentTarget.value = '')}
+              onChange={(e) => onTranslationChange(e, { language, translation })}
             />
           </div>
         ))}

@@ -32,6 +32,20 @@ export const addFieldToJson = (json: string, field: string, value = ''): string 
   );
 };
 
+type PlainObject = { [key: string]: any };
+
+function flattenObject(obj: PlainObject, prefix: string = ''): PlainObject {
+  return Object.keys(obj).reduce((acc: PlainObject, k: string): PlainObject => {
+    const pre = prefix.length ? prefix + '.' : '';
+    if (typeof obj[k] === 'object' && obj[k] !== null && !Array.isArray(obj[k])) {
+      Object.assign(acc, flattenObject(obj[k], pre + k));
+    } else {
+      acc[pre + k] = obj[k];
+    }
+    return acc;
+  }, {});
+}
+
 export const getMissingTranslations = (
   translations: Record<string, Record<string, string>>,
 ): Record<string, string[]> => {
@@ -66,12 +80,12 @@ export const getTranslationMissingFields = (translations: Translation): Translat
 
   languages.forEach((lang) => {
     commonCategories.forEach((category) => {
-      const parsedTranslation = tryParse(translations[lang][category] ?? '{}');
+      const parsedTranslation = flattenObject(tryParse(translations[lang][category] ?? '{}'));
       const fields = Object.keys(parsedTranslation);
 
       languages.forEach((otherLang) => {
         if (lang !== otherLang) {
-          const otherParsedTranslation = tryParse(translations[otherLang][category] ?? '{}');
+          const otherParsedTranslation = flattenObject(tryParse(translations[otherLang][category] ?? '{}'));
 
           fields.forEach((key) => {
             const otherField = otherParsedTranslation[key] as string;
