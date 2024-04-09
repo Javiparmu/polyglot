@@ -1,8 +1,9 @@
 import { formatObjectToJSON, getMissingTranslations, getTranslationMissingFields } from '@/lib/helpers';
 import { Translation } from '@/lib/types';
-import { create } from 'zustand';
 import { tryParse } from '@/lib/helpers';
 import setValue from 'lodash.set';
+import { createWithEqualityFn } from 'zustand/traditional';
+import { isDeepStrictEqual } from 'util';
 
 export type TranslationMissingFields = Record<string, Record<string, { missing: string[]; empty: string[] }>>;
 
@@ -18,55 +19,59 @@ type TranslationStore = {
   setSelectedTranslation: (selected: { language: string; translation: string }) => void;
 };
 
-export const useTranslationStore = create<TranslationStore>()((set) => ({
-  translations: {},
-  languages: [],
-  selectedTranslation: { language: '', translation: '' },
-  missingTranslations: {},
-  missingFields: {},
-  updateTranslations: (translations) =>
-    set({
-      translations,
-      languages: Object.keys(translations),
-      missingTranslations: getMissingTranslations(translations),
-      missingFields: getTranslationMissingFields(translations),
-    }),
-  addTranslation: (language, translation) =>
-    set((state) => {
-      const newTranslations = {
-        ...state.translations,
-        [language]: {
-          ...state.translations[language],
-          ...translation,
-        },
-      };
+export const useTranslationStore = createWithEqualityFn<TranslationStore>(
+  (set) => ({
+    translations: {},
+    languages: [],
+    selectedTranslation: { language: '', translation: '' },
+    missingTranslations: {},
+    missingFields: {},
+    updateTranslations: (translations) =>
+      set((state) => {
+        const newLanguages = Object.keys(translations);
 
-      return {
-        translations: newTranslations,
-        languages: Array.from(new Set([...state.languages, language])),
-        missingTranslations: getMissingTranslations(newTranslations),
-        missingFields: getTranslationMissingFields(newTranslations),
-      };
-    }),
-  addFieldToTranslation: (language, translation, field) =>
-    set((state) => {
-      const newTranslations = { ...state.translations };
-      if (!newTranslations[language]) {
-        newTranslations[language] = {};
-      }
+        return {
+          translations,
+          languages: newLanguages,
+          missingTranslations: getMissingTranslations(translations),
+          missingFields: getTranslationMissingFields(translations),
+        };
+      }),
+    addTranslation: (language, translation) =>
+      set((state) => {
+        const newTranslations = {
+          ...state.translations,
+          [language]: {
+            ...state.translations[language],
+            ...translation,
+          },
+        };
 
-      const translationObject = tryParse(newTranslations[language][translation]);
+        return {
+          translations: newTranslations,
+          missingTranslations: getMissingTranslations(newTranslations),
+          missingFields: getTranslationMissingFields(newTranslations),
+        };
+      }),
+    addFieldToTranslation: (language, translation, field) =>
+      set((state) => {
+        const newTranslations = { ...state.translations };
+        if (!newTranslations[language]) {
+          newTranslations[language] = {};
+        }
 
-      setValue(translationObject, field, '');
+        const translationObject = tryParse(newTranslations[language][translation]);
 
-      newTranslations[language][translation] = formatObjectToJSON(translationObject);
+        setValue(translationObject, field, '');
 
-      return {
-        translations: newTranslations,
-        languages: Array.from(new Set([...state.languages, language])),
-        missingTranslations: getMissingTranslations(newTranslations),
-        missingFields: getTranslationMissingFields(newTranslations),
-      };
-    }),
-  setSelectedTranslation: (selected) => set({ selectedTranslation: selected }),
-}));
+        newTranslations[language][translation] = formatObjectToJSON(translationObject);
+
+        return {
+          translations: newTranslations,
+          missingFields: getTranslationMissingFields(newTranslations),
+        };
+      }),
+    setSelectedTranslation: (selected) => set({ selectedTranslation: selected }),
+  }),
+  isDeepStrictEqual,
+);

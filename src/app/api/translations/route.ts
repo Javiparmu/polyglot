@@ -56,3 +56,36 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   return NextResponse.json({ translations });
 }
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const { translations } = await req.json();
+  const limit = pLimit(Number(process.env.S3_UPLOAD_CONCURRENCY) ?? 10);
+
+  await Promise.all(
+    Object.entries(translations).map(([language, translation]) =>
+      limit(async () => {
+        await s3.send(
+          new GetObjectCommand({
+            Bucket: process.env.S3_TRANSLATIONS_BUCKET,
+            Key: `${process.env.S3_TRANSLATIONS_KEY}${language}.json`,
+          }),
+        );
+      }),
+    ),
+  );
+
+  await Promise.all(
+    Object.entries(translations).map(([language, translation]) =>
+      limit(async () => {
+        await s3.send(
+          new GetObjectCommand({
+            Bucket: process.env.S3_TRANSLATIONS_BUCKET,
+            Key: `${process.env.S3_TRANSLATIONS_KEY}${language}.json`,
+          }),
+        );
+      }),
+    ),
+  );
+
+  return NextResponse.json({ message: 'Translations updated' });
+}

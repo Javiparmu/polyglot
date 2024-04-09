@@ -15,13 +15,39 @@ import {
 import { useTranslationStore } from '@/app/store/useTranslationStore';
 import Flag from './flag';
 import { useTranslationUpload } from '@/app/hooks/useTranslationUpload';
+import { shallow } from 'zustand/shallow';
+import { updateTranslations } from '@/app/actions/updateTranslations';
 
 const Navbar = () => {
+  const languages = useTranslationStore((state) => state.languages, shallow);
+
+  const onUpdateTranslations = async () => {
+    const translations = useTranslationStore.getState().translations;
+
+    await updateTranslations(translations);
+  };
+
+  return (
+    <header className="hidden lg:flex h-[60px] items-center justify-between border-b px-6">
+      <div className="flex items-center gap-2 font-semibold">
+        <Logo className="h-8 w-8 stroke-red-500" />
+        <span className="">Translation Checker</span>
+      </div>
+      <div className="flex items-center gap-8">
+        <UploadTranslationsButton languages={languages} />
+        <Button onClick={onUpdateTranslations} className="bg-blue-600 hover:bg-blue-500 text-base px-6">
+          Update
+        </Button>
+      </div>
+    </header>
+  );
+};
+
+const UploadTranslationsButton = ({ languages }: { languages: string[] }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [selectedLanguage, setSelectedLanguage] = useState<string>('en');
 
-  const { languages } = useTranslationStore();
   const { onMultipleTranslationsChange } = useTranslationUpload({});
 
   const onTranslationUpload = (language: string) => {
@@ -34,48 +60,41 @@ const Navbar = () => {
   };
 
   return (
-    <header className="hidden lg:flex h-[60px] items-center justify-between border-b px-6">
-      <div className="flex items-center gap-2 font-semibold">
-        <Logo className="h-8 w-8 stroke-red-500" />
-        <span className="">Translation Checker</span>
-      </div>
-      <div className="flex items-center gap-8">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="text-base px-4 gap-2">
-              <UploadIcon className="h-4 w-4" />
-              Upload
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel className="text-slate-600">Languages</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            {languages.map((language) => (
-              <DropdownMenuItem
-                key={language}
-                onClick={() => onTranslationUpload(language)}
-                className="flex items-center justify-between w-full text-slate-500 hover:text-slate-700 cursor-pointer"
-              >
-                <div className="flex items-center gap-2">
-                  <Flag language={language} className="w-4 h-4" />
-                  {language}
-                </div>
-                <UploadIcon className="w-4 h-4" />
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        <input
-          ref={fileInputRef}
-          accept=".json"
-          type="file"
-          className="hidden"
-          onChange={(e) => onMultipleTranslationsChange(e, selectedLanguage)}
-          multiple
-        />
-        <Button className="bg-blue-600 hover:bg-blue-500 text-base px-6">Update</Button>
-      </div>
-    </header>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild className="outline-none">
+          <Button variant="outline" className="text-base px-4 gap-2">
+            <UploadIcon className="h-4 w-4" />
+            Upload
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel className="text-slate-600">Languages</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {languages.map((language) => (
+            <DropdownMenuItem
+              key={language}
+              onClick={() => onTranslationUpload(language)}
+              className="flex items-center justify-between w-full text-slate-500 hover:text-slate-700 cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Flag language={language} className="w-4 h-4" />
+                {language}
+              </div>
+              <UploadIcon className="w-4 h-4" />
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <input
+        ref={fileInputRef}
+        accept=".json"
+        type="file"
+        className="hidden"
+        onChange={(e) => onMultipleTranslationsChange(e, selectedLanguage)}
+        multiple
+      />
+    </>
   );
 };
 
