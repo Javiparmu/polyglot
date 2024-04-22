@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, ListObjectsV2Command, GetObjectCommand, _Object } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command, GetObjectCommand, _Object, PutObjectCommand } from '@aws-sdk/client-s3';
 import { formatJson } from '@/lib/helpers';
 import pLimit from 'p-limit';
+
+const defaultConcurrency = 10;
 
 const s3 = new S3Client({ region: process.env.AWS_REGION });
 
@@ -19,7 +21,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   let translations = {} as any;
 
-  const limit = pLimit(Number(process.env.S3_DOWNLOAD_CONCURRENCY) ?? 10);
+  const limit = pLimit(
+    process.env.S3_DOWNLOAD_CONCURRENCY ? Number(process.env.S3_DOWNLOAD_CONCURRENCY) : defaultConcurrency,
+  );
 
   await Promise.all(
     Contents.map((file) =>
@@ -59,28 +63,25 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const { translations } = await req.json();
-  const limit = pLimit(Number(process.env.S3_UPLOAD_CONCURRENCY) ?? 10);
 
-  await Promise.all(
-    Object.entries(translations).map(([language, translation]) =>
-      limit(async () => {
-        await s3.send(
-          new GetObjectCommand({
-            Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-            Key: `${process.env.S3_TRANSLATIONS_KEY}${language}.json`,
-          }),
-        );
-      }),
-    ),
+  const limit = pLimit(
+    process.env.S3_UPLOAD_CONCURRENCY ? Number(process.env.S3_UPLOAD_CONCURRENCY) : defaultConcurrency,
   );
 
   await Promise.all(
-    Object.entries(translations).map(([language, translation]) =>
+    Object.keys(translations).map((language) =>
       limit(async () => {
-        await s3.send(
-          new GetObjectCommand({
-            Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-            Key: `${process.env.S3_TRANSLATIONS_KEY}${language}.json`,
+        await Promise.all(
+          Object.keys(translations[language]).map((translation) => {
+            const putObjectParams = {
+              Bucket: process.env.S3_TRANSLATIONS_BUCKET,
+              Key: `${language}/${translation}.json`,
+              Body: formatJson(translations[language][translation]),
+            };
+
+            const command = new PutObjectCommand(putObjectParams);
+
+            return s3.send(command);
           }),
         );
       }),

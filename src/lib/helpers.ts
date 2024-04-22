@@ -107,3 +107,19 @@ export const getTranslationMissingFields = (translations: Translation): Translat
 export const isEmpty = (array: unknown[]): boolean => !array || array.length === 0;
 
 export const isEmptyObject = (object: Record<string, unknown>): boolean => !object || Object.keys(object).length === 0;
+
+export const apiBaseUrl = process.env.API_BASE_URL;
+
+interface ApiFetchOptions extends RequestInit {
+  errorMessage?: string;
+}
+
+export const apiFetch = async <T>(url: string, options: ApiFetchOptions): Promise<T> => {
+  const response = await fetch(apiBaseUrl + url, options);
+
+  if (!response.ok) {
+    throw new Error(options.errorMessage ?? 'Failed to fetch data');
+  }
+
+  return response.json();
+};

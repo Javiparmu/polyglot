@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Logo } from './icons';
 import { Button } from './ui/button';
 import { UploadIcon } from '@radix-ui/react-icons';
@@ -12,19 +12,47 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
 import { useTranslationStore } from '@/app/store/useTranslationStore';
 import Flag from './flag';
 import { useTranslationUpload } from '@/app/hooks/useTranslationUpload';
-import { shallow } from 'zustand/shallow';
 import { updateTranslations } from '@/app/actions/updateTranslations';
+import { errorToast, successToast } from '@/lib/toasts';
 
 const Navbar = () => {
-  const languages = useTranslationStore((state) => state.languages, shallow);
+  const [loading, setLoading] = useState(false);
+  const languages = useTranslationStore((state) => state.languages);
+  const missingFields = useTranslationStore((state) => state.missingFields);
+  const missingTranslations = useTranslationStore((state) => state.missingTranslations);
+
+  const canUpdate = useMemo(
+    () => Object.keys(missingFields).length === 0 && Object.keys(missingTranslations).length === 0,
+    [missingFields, missingTranslations],
+  );
 
   const onUpdateTranslations = async () => {
+    if (!canUpdate) {
+      errorToast('Please fix all missing fields before updating translations');
+      return;
+    }
     const translations = useTranslationStore.getState().translations;
 
+    setLoading(true);
+
     await updateTranslations(translations);
+
+    setLoading(false);
+
+    successToast('Translations updated');
   };
 
   return (
@@ -35,9 +63,17 @@ const Navbar = () => {
       </div>
       <div className="flex items-center gap-8">
         <UploadTranslationsButton languages={languages} />
-        <Button onClick={onUpdateTranslations} className="bg-blue-600 hover:bg-blue-500 text-base px-6">
-          Update
-        </Button>
+        {canUpdate ? (
+          <Button
+            disabled={loading}
+            onClick={onUpdateTranslations}
+            className="bg-blue-600 hover:bg-blue-500 text-base px-6"
+          >
+            Update
+          </Button>
+        ) : (
+          <UploadTranslationsModal />
+        )}
       </div>
     </header>
   );
@@ -98,4 +134,29 @@ const UploadTranslationsButton = ({ languages }: { languages: string[] }) => {
   );
 };
 
+const UploadTranslationsModal = () => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button className="bg-blue-600 hover:bg-blue-500 text-base px-6">Update</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[450px]">
+        <DialogHeader>
+          <DialogTitle className="text-xl">There are missing translations or fields</DialogTitle>
+          <DialogDescription className="text-base">Are you sure you want to continue updating?</DialogDescription>
+        </DialogHeader>
+        <DialogFooter className="sm:justify-start mt-4">
+          <Button className="bg-blue-600 hover:bg-blue-500" type="submit">
+            Update
+          </Button>
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Cancel
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
 export default Navbar;

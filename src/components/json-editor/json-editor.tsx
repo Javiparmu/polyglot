@@ -90,8 +90,6 @@ export const JSONEditor = ({
     value && editor?.getAction('editor.action.formatDocument')?.run();
   }, []);
 
-  const handleClearClick = () => editorRef.current?.setValue('');
-
   const handleEditorWillMount: BeforeMount = () => handleJsonSchemasUpdate();
 
   const handleEditorDidMount: OnMount = (editor) => {
@@ -161,26 +159,16 @@ export const JSONEditor = ({
     [isAutoPrettifyOn, handleEditorPrettify, onChange],
   );
 
-  const handleFixClick = () => {
-    const editor = editorRef.current;
-    const value = editor && editor.getValue();
-    const fixedValue = value && dirtyJson.parse(value);
-    const formattedValue = fixedValue && prettifyJsonString(JSON.stringify(fixedValue));
-    editor && editor.setValue(formattedValue);
-  };
-
   return (
     <div className="h-full">
       <ToolBar
         isValidJson={isValidJson}
         isAutoPrettifyOn={isAutoPrettifyOn}
         onAutoPrettifyChange={toggleAutoPrettifyOn}
-        onClearClick={handleClearClick}
         onDownloadClick={handleDownloadClick}
         onMinifyClick={handleMinifyClick}
         onPrettifyClick={handleEditorPrettify}
         onUploadClick={handleUploadClick}
-        onFixClick={handleFixClick}
       />
       <div
         className={cn(

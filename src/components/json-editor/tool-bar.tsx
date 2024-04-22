@@ -5,11 +5,9 @@ import { CommandBar, ICommandBarItemProps, CommandButton, Checkbox, IIconProps }
 export interface ToolBarProps {
   onMinifyClick: () => void;
   onPrettifyClick: () => void;
-  onClearClick: () => void;
   onAutoPrettifyChange: () => void;
   onDownloadClick: () => void;
   onUploadClick: (fileContent: File) => void;
-  onFixClick: () => void;
   isAutoPrettifyOn: boolean;
   isValidJson: boolean;
 }
@@ -57,10 +55,8 @@ export const ToolBar: React.FC<ToolBarProps> = ({
   onPrettifyClick,
   isAutoPrettifyOn,
   onAutoPrettifyChange,
-  onClearClick,
   onDownloadClick,
   onUploadClick,
-  onFixClick,
   isValidJson,
 }) => {
   const leftItems: ICommandBarItemProps[] = [
@@ -75,19 +71,6 @@ export const ToolBar: React.FC<ToolBarProps> = ({
       iconProps: { iconName: 'Download' },
       onClick: onDownloadClick,
       disabled: !isValidJson,
-    },
-    {
-      key: 'clear',
-      text: 'Clear',
-      iconProps: { iconName: 'Delete' },
-      onClick: onClearClick,
-    },
-    {
-      key: 'fix',
-      text: 'Fix',
-      iconProps: { iconName: 'DeveloperTools' },
-      onClick: onFixClick,
-      disabled: isValidJson,
     },
     {
       key: 'minify',
