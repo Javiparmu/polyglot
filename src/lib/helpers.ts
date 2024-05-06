@@ -115,6 +115,7 @@ interface ApiFetchOptions extends RequestInit {
 }
 
 export const apiFetch = async <T>(url: string, options: ApiFetchOptions): Promise<T> => {
+  console.log('apiBaseUrl', apiBaseUrl, url);
   const response = await fetch(apiBaseUrl + url, options);
 
   if (!response.ok) {

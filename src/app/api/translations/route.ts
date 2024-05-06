@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Client, ListObjectsV2Command, GetObjectCommand, _Object, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  ListObjectsV2Command,
+  GetObjectCommand,
+  _Object,
+  PutObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { formatJson } from '@/lib/helpers';
 import pLimit from 'p-limit';
 
@@ -89,4 +96,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   );
 
   return NextResponse.json({ message: 'Translations updated' });
+}
+
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
+  const { language, translation } = await req.json();
+
+  console.log(language, translation);
+
+  const deleteObjectParams = {
+    Bucket: process.env.S3_TRANSLATIONS_BUCKET,
+    Key: `${language}/${translation}.json`,
+  };
+
+  await s3.send(new DeleteObjectCommand(deleteObjectParams));
+
+  return NextResponse.json({ message: 'Translation deleted' });
 }

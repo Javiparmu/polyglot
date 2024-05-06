@@ -13,3 +13,16 @@ export const updateTranslations = async (translations: Translation) => {
     errorMessage: 'Failed to update translations',
   });
 };
+
+export const updateTranslationName = async (language: string, oldName: string, newName: string) => {
+  await apiFetch('/translations/name', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ language, oldName, newName }),
+    errorMessage: 'Failed to update translation name',
+  });
+
+  return newName;
+};

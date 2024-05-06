@@ -1,6 +1,10 @@
 import React, { useRef } from 'react';
 
-import { CommandBar, ICommandBarItemProps, CommandButton, Checkbox, IIconProps } from '@fluentui/react';
+import { Checkbox } from '../ui/checkbox';
+import { Label } from '../ui/label';
+import CommandBar, { CommandBarItem } from './command-bar';
+import CommandButton from './command-button';
+import { CodeIcon, DownloadIcon, Minimize2Icon, UploadIcon } from 'lucide-react';
 
 export interface ToolBarProps {
   onMinifyClick: () => void;
@@ -32,13 +36,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileHandle }) => {
     onFileHandle(fileUploaded);
   };
 
-  const uploadIcon: IIconProps = {
-    iconName: 'Upload',
-  };
+  const uploadIcon = <UploadIcon className="h-4 w-4" />;
 
   return (
     <>
-      <CommandButton iconProps={uploadIcon} text="Upload" onClick={handleUploadClick} />
+      <CommandButton onClick={handleUploadClick}>
+        {uploadIcon}
+        Upload
+      </CommandButton>
       <input
         ref={inputFileRef}
         style={{ display: 'none' }}
@@ -59,7 +64,7 @@ export const ToolBar: React.FC<ToolBarProps> = ({
   onUploadClick,
   isValidJson,
 }) => {
-  const leftItems: ICommandBarItemProps[] = [
+  const items: CommandBarItem[] = [
     {
       key: 'upload',
       onRender: () => <FileUploader onFileHandle={onUploadClick} />,
@@ -67,44 +72,44 @@ export const ToolBar: React.FC<ToolBarProps> = ({
     {
       key: 'download',
       text: 'Download',
-      ariaLabel: 'Grid view',
-      iconProps: { iconName: 'Download' },
+      icon: <DownloadIcon className="h-4 w-4" />,
       onClick: onDownloadClick,
       disabled: !isValidJson,
     },
     {
       key: 'minify',
       text: 'Minify',
-      iconProps: { iconName: 'MinimumValue' },
+      icon: <Minimize2Icon className="h-4 w-4" />,
       onClick: onMinifyClick,
       disabled: !isValidJson || isAutoPrettifyOn,
     },
     {
       key: 'prettify',
       text: 'Prettify',
-      iconProps: { iconName: 'Code' },
+      icon: <CodeIcon className="h-4 w-4" />,
       onClick: onPrettifyClick,
       disabled: !isValidJson || isAutoPrettifyOn,
     },
     {
       key: 'auto-prettify',
       onRender: () => (
-        <CommandButton>
-          <Checkbox label="Auto Prettify" onChange={onAutoPrettifyChange} checked={isAutoPrettifyOn} />
+        <CommandButton onClick={onAutoPrettifyChange}>
+          <Checkbox
+            className="border-gray-600 hover:border-gray-700"
+            id="auto-prettify"
+            onCheckedChange={onAutoPrettifyChange}
+            checked={isAutoPrettifyOn}
+          />
+          <Label
+            htmlFor="auto-prettify"
+            className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 peer-hover:text-gray-600"
+          >
+            Auto Prettify
+          </Label>
         </CommandButton>
       ),
     },
   ];
 
-  return (
-    <CommandBar
-      styles={{
-        root: {
-          alignItems: 'center',
-        },
-      }}
-      items={leftItems}
-      ariaLabel="json content commands"
-    />
-  );
+  return <CommandBar className="ml-8" items={items} />;
 };

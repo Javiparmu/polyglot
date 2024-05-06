@@ -1,8 +1,10 @@
 import { toast } from 'sonner';
 
+const defaultToastDuration = 5000;
+
 export const errorToast = (message = 'Something went wrong'): string | number =>
   toast.error(message, {
-    duration: 5000,
+    duration: defaultToastDuration,
     style: {
       borderRadius: '0.5rem',
       background: 'rgb(239 68 68)',
@@ -14,7 +16,7 @@ export const errorToast = (message = 'Something went wrong'): string | number =>
 
 export const successToast = (message = 'Success'): string | number =>
   toast.success(message, {
-    duration: 5000,
+    duration: defaultToastDuration,
     style: {
       borderRadius: '0.5rem',
       background: 'rgb(164,220,135)',

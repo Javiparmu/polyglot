@@ -40,10 +40,6 @@ const Navbar = () => {
   );
 
   const onUpdateTranslations = async () => {
-    if (!canUpdate) {
-      errorToast('Please fix all missing fields before updating translations');
-      return;
-    }
     const translations = useTranslationStore.getState().translations;
 
     setLoading(true);
@@ -72,7 +68,7 @@ const Navbar = () => {
             Update
           </Button>
         ) : (
-          <UploadTranslationsModal />
+          <UploadTranslationsModal onConfirm={onUpdateTranslations} />
         )}
       </div>
     </header>
@@ -134,7 +130,7 @@ const UploadTranslationsButton = ({ languages }: { languages: string[] }) => {
   );
 };
 
-const UploadTranslationsModal = () => {
+const UploadTranslationsModal = ({ onConfirm }: { onConfirm: () => void }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -146,9 +142,11 @@ const UploadTranslationsModal = () => {
           <DialogDescription className="text-base">Are you sure you want to continue updating?</DialogDescription>
         </DialogHeader>
         <DialogFooter className="sm:justify-start mt-4">
-          <Button className="bg-blue-600 hover:bg-blue-500" type="submit">
-            Update
-          </Button>
+          <DialogClose asChild>
+            <Button onClick={onConfirm} className="bg-blue-600 hover:bg-blue-500" type="submit">
+              Update
+            </Button>
+          </DialogClose>
           <DialogClose asChild>
             <Button type="button" variant="secondary">
               Cancel

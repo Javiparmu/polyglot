@@ -43,12 +43,7 @@ const TranslationEditor = () => {
       {language && <EditorInfo onItemClick={onFieldClick} language={language} translation={translation} />}
       <div className="max-w-[1400px] h-[calc(100%-32px)]">
         {translationData != null && (
-          <JSONEditor
-            value={translationData}
-            title={`${language} - ${translation}`}
-            onChange={handleChange}
-            isSchemaSampleDataOn={false}
-          />
+          <JSONEditor value={translationData} title={`${language} - ${translation}`} onChange={handleChange} />
         )}
       </div>
     </div>

@@ -7,8 +7,11 @@ import Flag from './flag';
 import { useTranslationStore } from '@/app/store/useTranslationStore';
 import { useTranslationUpload } from '@/app/hooks/useTranslationUpload';
 import { isEmpty } from '@/lib/helpers';
-import { Fragment, useMemo, useRef } from 'react';
-import JsonUploader from './json-uploader';
+import { useMemo, useRef } from 'react';
+import { EllipsisVerticalIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu';
+import { deleteTranslation } from '@/app/actions/deleteTranslation';
+import { successToast } from '@/lib/toasts';
 
 interface LanguageCollapsibleProps {
   language: string;
@@ -31,6 +34,15 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
     }
   };
 
+  const onTranslationDelete = async (language: string, translation: string) => {
+    try {
+      await deleteTranslation(language, translation);
+      successToast('Translation deleted');
+    } catch (error) {
+      errorToast('Failed to delete translation');
+    }
+  };
+
   return (
     <Collapsible open={isOpen} onOpenChange={(open) => onToggle(open)} defaultOpen className="space-y-2">
       <div className="flex items-center justify-between space-x-4 px-4">
@@ -45,7 +57,7 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
           </Button>
         </CollapsibleTrigger>
       </div>
-      <CollapsibleContent className="space-y-2">
+      <CollapsibleContent className="">
         {Object.keys(translations[language])
           .sort()
           .map((translation) => (
@@ -60,11 +72,28 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
                 })
               }
               className={`
-                flex w-full justify-start pl-6 ${missingTranslations[language].includes(translation) ? 'text-red-500' : ''}
+                group flex w-full justify-between pl-6 ${missingTranslations[language].includes(translation) ? 'text-red-500' : ''}
                 ${!isEmpty(missing[translation]?.empty) || !isEmpty(missing[translation]?.missing) ? 'text-orange-400' : ''}
               `}
             >
               {translation}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild className="outline-none">
+                  <EllipsisVerticalIcon className="h-4 w-4 text-transparent group-hover:text-gray-400 hover:text-gray-500" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTranslationDelete(language, translation);
+                    }}
+                    className="flex items-center justify-between text-slate-500 hover:text-slate-700 cursor-pointer"
+                  >
+                    Delete
+                    <Trash2Icon className="h-4 w-4" />
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </Button>
           ))}
         {missingTranslations[language]?.map((translation) => (
@@ -87,8 +116,28 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
             />
           </div>
         ))}
+        <AddTranslationButton language={language} />
       </CollapsibleContent>
     </Collapsible>
+  );
+};
+
+const AddTranslationButton = ({ language }: { language: string }) => {
+  const { addTranslation } = useTranslationStore();
+
+  const onAddTranslation = () => {
+    addTranslation(language, { 'New translation': '' });
+  };
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={onAddTranslation}
+      className="group flex w-full items-center justify-center h-7"
+    >
+      <PlusIcon className="h-4 w-4 text-blue-600 group-hover:text-blue-500" />
+    </Button>
   );
 };
 
