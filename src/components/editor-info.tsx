@@ -21,7 +21,7 @@ interface EditorInfoProps {
 }
 
 const EditorInfo = ({ onItemClick, language, translation }: EditorInfoProps) => {
-  const { missingFields, changeTranslationName } = useTranslationStore();
+  const { missingFields } = useTranslationStore();
   const { missing, empty } = useMemo(
     () => missingFields?.[language]?.[translation] || {},
     [language, translation, missingFields],
@@ -42,8 +42,6 @@ const EditorInfo = ({ onItemClick, language, translation }: EditorInfoProps) => 
     setIsEditing(false);
 
     await updateTranslationName(language, translation, translationName);
-
-    changeTranslationName(language, translation, translationName);
 
     successToast('Translation name updated');
   };

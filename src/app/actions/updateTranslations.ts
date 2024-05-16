@@ -2,6 +2,7 @@
 
 import { Translation } from '@/lib/types';
 import { apiFetch } from '@/lib/helpers';
+import { revalidateTag } from 'next/cache';
 
 export const updateTranslations = async (translations: Translation) => {
   await apiFetch<Translation>('/translations', {
@@ -12,6 +13,8 @@ export const updateTranslations = async (translations: Translation) => {
     body: JSON.stringify({ translations }),
     errorMessage: 'Failed to update translations',
   });
+
+  revalidateTag('translations');
 };
 
 export const updateTranslationName = async (language: string, oldName: string, newName: string) => {
@@ -23,6 +26,8 @@ export const updateTranslationName = async (language: string, oldName: string, n
     body: JSON.stringify({ language, oldName, newName }),
     errorMessage: 'Failed to update translation name',
   });
+
+  revalidateTag('translations');
 
   return newName;
 };

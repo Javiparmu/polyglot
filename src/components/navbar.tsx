@@ -27,6 +27,17 @@ import Flag from './flag';
 import { useTranslationUpload } from '@/app/hooks/useTranslationUpload';
 import { updateTranslations } from '@/app/actions/updateTranslations';
 import { errorToast, successToast } from '@/lib/toasts';
+import { SettingsIcon } from 'lucide-react';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from './ui/drawer';
 
 const Navbar = () => {
   const [loading, setLoading] = useState(false);
@@ -44,11 +55,15 @@ const Navbar = () => {
 
     setLoading(true);
 
-    await updateTranslations(translations);
+    try {
+      await updateTranslations(translations);
+
+      successToast('Translations updated');
+    } catch (error) {
+      errorToast('Failed to update translations');
+    }
 
     setLoading(false);
-
-    successToast('Translations updated');
   };
 
   return (
@@ -58,6 +73,7 @@ const Navbar = () => {
         <span className="">Translation Checker</span>
       </div>
       <div className="flex items-center gap-8">
+        <SettingsDrawer />
         <UploadTranslationsButton languages={languages} />
         {canUpdate ? (
           <Button
@@ -157,4 +173,27 @@ const UploadTranslationsModal = ({ onConfirm }: { onConfirm: () => void }) => {
     </Dialog>
   );
 };
+
+const SettingsDrawer = () => {
+  return (
+    <Drawer direction="right">
+      <DrawerTrigger asChild>
+        <SettingsIcon className="h-5 w-5 text-gray-600" />
+      </DrawerTrigger>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle>Configuration</DrawerTitle>
+          <DrawerDescription>Set up all your config to unlock full potential.</DrawerDescription>
+        </DrawerHeader>
+        <DrawerFooter>
+          <Button>Submit</Button>
+          <DrawerClose>
+            <Button variant="outline">Cancel</Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  );
+};
+
 export default Navbar;

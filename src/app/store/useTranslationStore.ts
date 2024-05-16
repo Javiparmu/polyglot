@@ -16,8 +16,6 @@ type TranslationStore = {
   addTranslation: (language: string, translation: Record<string, string>) => void;
   addFieldToTranslation: (language: string, translation: string, field: string) => void;
   setSelectedTranslation: (selected: { language: string; translation: string }) => void;
-  changeTranslationName: (language: string, oldName: string, newName: string) => void;
-  deleteTranslation: (language: string, translation: string) => void;
 };
 
 export const useTranslationStore = createWithEqualityFn<TranslationStore>(
@@ -74,33 +72,6 @@ export const useTranslationStore = createWithEqualityFn<TranslationStore>(
         };
       }),
     setSelectedTranslation: (selected) => set({ selectedTranslation: selected }),
-    changeTranslationName: (language, oldName, newName) =>
-      set((state) => {
-        const newTranslations = { ...state.translations };
-        if (!newTranslations[language]) {
-          newTranslations[language] = {};
-        }
-
-        newTranslations[language][newName] = newTranslations[language][oldName];
-        delete newTranslations[language][oldName];
-
-        return {
-          translations: newTranslations,
-          missingFields: getTranslationMissingFields(newTranslations),
-          missingTranslations: getMissingTranslations(newTranslations),
-        };
-      }),
-    deleteTranslation: (language, translation) =>
-      set((state) => {
-        const newTranslations = { ...state.translations };
-        delete newTranslations[language][translation];
-
-        return {
-          translations: newTranslations,
-          missingFields: getTranslationMissingFields(newTranslations),
-          missingTranslations: getMissingTranslations(newTranslations),
-        };
-      }),
   }),
   isDeepStrictEqual,
 );

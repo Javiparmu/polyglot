@@ -101,8 +101,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 export async function DELETE(req: NextRequest): Promise<NextResponse> {
   const { language, translation } = await req.json();
 
-  console.log(language, translation);
-
   const deleteObjectParams = {
     Bucket: process.env.S3_TRANSLATIONS_BUCKET,
     Key: `${language}/${translation}.json`,

@@ -1,5 +1,7 @@
 import { Dashboard } from '@/components/dashboard';
+import { FullPageLoader } from '@/components/full-page-loader';
 import Navbar from '@/components/navbar';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { Suspense } from 'react';
 import { Toaster } from 'sonner';
 
@@ -14,7 +16,10 @@ export default async function Home() {
           </main>
         }
       >
-        <Dashboard />
+        <FullPageLoader />
+        <TooltipProvider>
+          <Dashboard />
+        </TooltipProvider>
       </Suspense>
       <Toaster />
     </div>

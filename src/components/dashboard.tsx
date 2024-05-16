@@ -7,7 +7,9 @@ export async function Dashboard() {
     headers: {
       'Content-Type': 'application/json',
     },
-    cache: 'no-cache',
+    next: {
+      tags: ['translations'],
+    },
   });
 
   const { translations } = await response.json();

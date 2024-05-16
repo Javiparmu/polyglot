@@ -1,5 +1,4 @@
 import { HTMLAttributes, ReactNode } from 'react';
-import { Button } from '../ui/button';
 import { cn } from '@/lib/utils';
 import CommandButton from './command-button';
 
@@ -19,15 +18,16 @@ interface CommandBarProps extends HTMLAttributes<HTMLDivElement> {
 const CommandBar = ({ items, className, ...props }: CommandBarProps) => {
   return (
     <div className={cn(className, 'flex')} {...props}>
-      {items.map(
-        (item) =>
-          item?.onRender?.() ?? (
-            <CommandButton key={item.key} onClick={item.onClick} disabled={item.disabled}>
+      {items.map((item) => (
+        <span key={item.key}>
+          {item?.onRender?.() ?? (
+            <CommandButton onClick={item.onClick} disabled={item.disabled}>
               {item.icon && <span>{item.icon}</span>}
               <span>{item.text}</span>
             </CommandButton>
-          ),
-      )}
+          )}
+        </span>
+      ))}
     </div>
   );
 };

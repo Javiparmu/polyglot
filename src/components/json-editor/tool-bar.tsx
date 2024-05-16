@@ -93,19 +93,21 @@ export const ToolBar: React.FC<ToolBarProps> = ({
     {
       key: 'auto-prettify',
       onRender: () => (
-        <CommandButton onClick={onAutoPrettifyChange}>
-          <Checkbox
-            className="border-gray-600 hover:border-gray-700"
-            id="auto-prettify"
-            onCheckedChange={onAutoPrettifyChange}
-            checked={isAutoPrettifyOn}
-          />
-          <Label
-            htmlFor="auto-prettify"
-            className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 peer-hover:text-gray-600"
-          >
-            Auto Prettify
-          </Label>
+        <CommandButton onClick={onAutoPrettifyChange} asChild>
+          <span>
+            <Checkbox
+              className="border-gray-600 hover:border-gray-700"
+              id="auto-prettify"
+              onCheckedChange={onAutoPrettifyChange}
+              checked={isAutoPrettifyOn}
+            />
+            <Label
+              htmlFor="auto-prettify"
+              className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 peer-hover:text-gray-600"
+            >
+              Auto Prettify
+            </Label>
+          </span>
         </CommandButton>
       ),
     },
