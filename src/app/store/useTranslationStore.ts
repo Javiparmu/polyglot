@@ -27,7 +27,7 @@ export const useTranslationStore = createWithEqualityFn<TranslationStore>(
     missingFields: {},
     updateTranslations: (translations) =>
       set((state) => {
-        const newLanguages = Object.keys(translations);
+        const newLanguages = Object.keys(translations ?? {});
 
         return {
           translations,

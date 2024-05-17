@@ -65,6 +65,8 @@ export const getTranslationMissingFields = (translations: Translation): Translat
   const languages = Object.keys(translations);
   const missingFields: TranslationMissingFields = {};
 
+  if (languages.length === 0) return {}
+
   const allCategories = languages.map((lang) => Object.keys(translations[lang]));
   const commonCategories = allCategories.reduce((a, b) => a.filter((c) => b.includes(c)));
 
@@ -109,17 +111,3 @@ export const isEmpty = (array: unknown[]): boolean => !array || array.length ===
 export const isEmptyObject = (object: Record<string, unknown>): boolean => !object || Object.keys(object).length === 0;
 
 export const apiBaseUrl = process.env.API_BASE_URL;
-
-interface ApiFetchOptions extends RequestInit {
-  errorMessage?: string;
-}
-
-export const apiFetch = async <T>(url: string, options: ApiFetchOptions): Promise<T> => {
-  const response = await fetch(apiBaseUrl + url, options);
-
-  if (!response.ok) {
-    throw new Error(options.errorMessage ?? 'Failed to fetch data');
-  }
-
-  return response.json();
-};

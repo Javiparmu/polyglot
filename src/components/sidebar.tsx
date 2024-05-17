@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react';
 import LanguageCollapsible from './language-collapsible';
 import { useTranslationStore } from '@/app/store/useTranslationStore';
+import { Translation } from '@/lib/types';
 
 type CollapsibleState = {
   [key: string]: boolean;
 };
 
 interface SidebarProps {
-  translationData: Record<string, Record<string, string>>;
+  translationData: Translation;
 }
 
 const Sidebar = ({ translationData }: SidebarProps) => {

@@ -1,18 +1,9 @@
 import TranslationEditor from '@/components/translation-editor';
 import Sidebar from './sidebar';
+import { getTranslations } from '@/app/actions/getTranslations';
 
 export async function Dashboard() {
-  const response = await fetch('http://localhost:3000/api/translations', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    next: {
-      tags: ['translations'],
-    },
-  });
-
-  const { translations } = await response.json();
+  const translations = await getTranslations();
 
   return (
     <main className="flex flex-1 min-h-0 overflow-hidden">

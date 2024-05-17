@@ -27,6 +27,7 @@ import { Input } from './ui/input';
 import { Dialogs, useDialogStore } from '@/app/store/useDialogStore';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { useLoaderStore } from '@/app/store/useLoaderStore';
+import { createTranslation } from '@/app/actions/createTranslation';
 
 interface LanguageCollapsibleProps {
   language: string;
@@ -119,7 +120,7 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
                 onClick={() => setOpen(Dialogs.DeleteTranslation, true)}
                 className="h-4 w-4 text-transparent hover:text-gray-500 group-hover:text-gray-400"
               />
-              <DeleteTranslationModal onDelete={() => onTranslationDelete(language, translation)} />
+              <DeleteTranslationModal translation={translation} language={language} onDelete={onTranslationDelete} />
             </Button>
           ))}
         {missingTranslations[language]?.map((translation) => (
@@ -160,8 +161,18 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
 const AddTranslationButton = ({ language }: { language: string }) => {
   const { addTranslation } = useTranslationStore();
 
-  const onAddTranslation = () => {
-    addTranslation(language, { 'New translation': '' });
+  const onAddTranslation = async () => {
+    const translationName = 'translation-' + crypto.randomUUID().substring(0, 8)
+
+    addTranslation(language, { [translationName]: '' });
+
+    try {
+      await createTranslation(language, translationName)
+
+      successToast('Translation created successfully')
+    } catch (error: any) {
+      errorToast(error.message)
+    }
   };
 
   return (
@@ -176,7 +187,7 @@ const AddTranslationButton = ({ language }: { language: string }) => {
   );
 };
 
-const DeleteTranslationModal = ({ onDelete }: { onDelete: () => void }) => {
+const DeleteTranslationModal = ({ language, translation, onDelete }: { language: string, translation: string, onDelete: (language: string, translation: string) => void }) => {
   const { isOpen, setOpen } = useDialogStore((state) => ({
     isOpen: state.open[Dialogs.DeleteTranslation],
     setOpen: state.setOpen,
@@ -191,7 +202,7 @@ const DeleteTranslationModal = ({ onDelete }: { onDelete: () => void }) => {
         </DialogHeader>
         <DialogFooter className="sm:justify-start mt-4">
           <DialogClose asChild>
-            <Button onClick={onDelete} className="bg-blue-600 hover:bg-blue-500" type="submit">
+            <Button onClick={() => onDelete(language, translation)} className="bg-blue-600 hover:bg-blue-500" type="submit">
               Delete
             </Button>
           </DialogClose>
