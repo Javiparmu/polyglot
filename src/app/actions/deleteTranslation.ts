@@ -3,7 +3,7 @@
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { revalidateTag } from 'next/cache';
 
-const s3 = new S3Client({ region: process.env.AWS_REGION })
+const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 export const deleteTranslation = async (language: string, translation: string): Promise<void> => {
   const deleteObjectParams = {

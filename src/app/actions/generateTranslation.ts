@@ -48,7 +48,7 @@ export const generateTranslation = async (
   const { Body } = await s3.send(new GetObjectCommand(getObjectParams));
 
   if (!Body) {
-    throw new Error('Translation not found')
+    throw new Error('Translation not found');
   }
 
   const translationData = JSON.parse(await Body.transformToString());
@@ -74,7 +74,7 @@ export const generateTranslation = async (
   const responseMessage = response.choices[0].message.content;
 
   if (!responseMessage) {
-    throw new Error('Translation failed')
+    throw new Error('Translation failed');
   }
 
   const putObjectParams = {

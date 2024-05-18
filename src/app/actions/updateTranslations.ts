@@ -8,7 +8,7 @@ import { CopyObjectCommand, DeleteObjectCommand, PutObjectCommand, S3Client } fr
 
 const defaultConcurrency = 10;
 
-const s3 = new S3Client({ region: process.env.AWS_REGION })
+const s3 = new S3Client({ region: process.env.AWS_REGION });
 
 export const updateTranslations = async (translations: Translation) => {
   const limit = pLimit(
