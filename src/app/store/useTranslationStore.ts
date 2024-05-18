@@ -15,6 +15,7 @@ type TranslationStore = {
   updateTranslations: (translations: Translation) => void;
   addTranslation: (language: string, translation: Record<string, string>) => void;
   addFieldToTranslation: (language: string, translation: string, field: string) => void;
+  deleteTranslation: (language: string, translation: string) => void;
   setSelectedTranslation: (selected: { language: string; translation: string }) => void;
 };
 
@@ -68,6 +69,17 @@ export const useTranslationStore = createWithEqualityFn<TranslationStore>(
 
         return {
           translations: newTranslations,
+          missingFields: getTranslationMissingFields(newTranslations),
+        };
+      }),
+    deleteTranslation: (language, translation) =>
+      set((state) => {
+        const newTranslations = { ...state.translations };
+        delete newTranslations[language][translation];
+
+        return {
+          translations: newTranslations,
+          missingTranslations: getMissingTranslations(newTranslations),
           missingFields: getTranslationMissingFields(newTranslations),
         };
       }),

@@ -41,8 +41,22 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
   const { setOpen } = useDialogStore();
   const { setIsLoading } = useLoaderStore();
 
-  const { languages, translations, missingTranslations, missingFields, setSelectedTranslation } = useTranslationStore();
-  const { onTranslationChange } = useTranslationUpload({});
+  const {
+    languages,
+    translations,
+    missingTranslations,
+    missingFields,
+    deleteTranslation: deleteSelectedTranslation,
+    setSelectedTranslation,
+  } = useTranslationStore();
+  const { onTranslationChange } = useTranslationUpload({
+    onSuccess: () => {
+      successToast('Translation uploaded successfully');
+    },
+  });
+
+  const [translationToDelete, setTranslationToDelete] = useState<string>();
+  const [translationToCreate, setTranslationToCreate] = useState<string>();
 
   const missing = useMemo(() => missingFields?.[language] || {}, [language, missingFields]);
 
@@ -53,20 +67,24 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
     }
   }, [fileInputRef]);
 
-  const onTranslationDelete = async (language: string, translation: string) => {
+  const onTranslationDelete = async () => {
+    if (!translationToDelete) return;
+
     try {
-      await deleteTranslation(language, translation);
+      deleteSelectedTranslation(language, translationToDelete);
+      await deleteTranslation(language, translationToDelete);
       successToast('Translation deleted');
     } catch (error) {
       errorToast('Failed to delete translation');
     }
+
+    setTranslationToDelete(undefined);
   };
 
-  const onGenerateTranslation = async (
-    translation: string,
-    options?: { context?: string; translateKeys?: boolean },
-  ) => {
-    const fromLanguage = languages.find((lang) => !!translations[lang][translation]);
+  const onGenerateTranslation = async (context?: string, translateKeys?: boolean) => {
+    if (!translationToCreate) return;
+
+    const fromLanguage = languages.find((lang) => !!translations[lang][translationToCreate]);
 
     if (!fromLanguage) {
       errorToast('No language to generate from');
@@ -75,9 +93,14 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
 
     setIsLoading(true);
 
-    await generateTranslation(fromLanguage, language, translation, options);
+    await generateTranslation(fromLanguage, language, translationToCreate, {
+      context,
+      translateKeys,
+    });
 
     setIsLoading(false);
+
+    setTranslationToCreate(undefined);
 
     successToast('Translation generated');
   };
@@ -101,7 +124,7 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
           .sort()
           .map((translation) => (
             <Button
-              key={translation}
+              key={language + translation}
               variant="ghost"
               size="sm"
               onClick={(e) => {
@@ -117,10 +140,12 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
             >
               {translation}
               <Trash2Icon
-                onClick={() => setOpen(Dialogs.DeleteTranslation, true)}
+                onClick={() => {
+                  setTranslationToDelete(translation);
+                  setOpen(Dialogs.DeleteTranslation, true);
+                }}
                 className="h-4 w-4 text-transparent hover:text-gray-500 group-hover:text-gray-400"
               />
-              <DeleteTranslationModal translation={translation} language={language} onDelete={onTranslationDelete} />
             </Button>
           ))}
         {missingTranslations[language]?.map((translation) => (
@@ -129,7 +154,10 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
               variant="ghost"
               size="sm"
               className="group flex w-full justify-between pl-6 text-red-500 hover:bg-red-100 hover:text-red-700"
-              onClick={() => setOpen(Dialogs.UploadTranslation, true)}
+              onClick={() => {
+                setTranslationToCreate(translation);
+                setOpen(Dialogs.UploadTranslation, true);
+              }}
             >
               {translation}
               <span className="flex items-center text-transparent group-hover:text-red-600 transition-all duration-300">
@@ -137,22 +165,23 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
                 <UploadIcon className="h-4 w-4 ml-2" />
               </span>
             </Button>
-            <input
-              ref={fileInputRef}
-              accept=".json"
-              type="file"
-              className="hidden"
-              onChange={(e) => onTranslationChange(e, { language, translation })}
-            />
-            <UploadTranslationModal
-              translation={translation}
-              onUpload={onTranslationUpload}
-              onGenerate={onGenerateTranslation}
-            />
-            <GenerateWithAIModal translation={translation} onGenerate={onGenerateTranslation} />
           </div>
         ))}
+        <input
+          ref={fileInputRef}
+          accept=".json"
+          type="file"
+          className="hidden"
+          onChange={(e) => {
+            onTranslationChange(e, { language, translation: translationToCreate }).then(() => {
+              setTranslationToCreate(undefined);
+            });
+          }}
+        />
         <AddTranslationButton language={language} />
+        {translationToCreate && <GenerateWithAIModal onGenerate={onGenerateTranslation} />}
+        {translationToCreate && <UploadTranslationModal onUpload={onTranslationUpload} />}
+        {translationToDelete && <DeleteTranslationModal onDelete={onTranslationDelete} />}
       </CollapsibleContent>
     </Collapsible>
   );
@@ -162,16 +191,16 @@ const AddTranslationButton = ({ language }: { language: string }) => {
   const { addTranslation } = useTranslationStore();
 
   const onAddTranslation = async () => {
-    const translationName = 'translation-' + crypto.randomUUID().substring(0, 8)
+    const translationName = 'translation-' + crypto.randomUUID().substring(0, 8);
 
     addTranslation(language, { [translationName]: '' });
 
     try {
-      await createTranslation(language, translationName)
+      await createTranslation(language, translationName);
 
-      successToast('Translation created successfully')
+      successToast('Translation created successfully');
     } catch (error: any) {
-      errorToast(error.message)
+      errorToast(error.message);
     }
   };
 
@@ -187,7 +216,7 @@ const AddTranslationButton = ({ language }: { language: string }) => {
   );
 };
 
-const DeleteTranslationModal = ({ language, translation, onDelete }: { language: string, translation: string, onDelete: (language: string, translation: string) => void }) => {
+const DeleteTranslationModal = ({ onDelete }: { onDelete: () => void }) => {
   const { isOpen, setOpen } = useDialogStore((state) => ({
     isOpen: state.open[Dialogs.DeleteTranslation],
     setOpen: state.setOpen,
@@ -202,7 +231,7 @@ const DeleteTranslationModal = ({ language, translation, onDelete }: { language:
         </DialogHeader>
         <DialogFooter className="sm:justify-start mt-4">
           <DialogClose asChild>
-            <Button onClick={() => onDelete(language, translation)} className="bg-blue-600 hover:bg-blue-500" type="submit">
+            <Button onClick={onDelete} className="bg-blue-600 hover:bg-blue-500" type="submit">
               Delete
             </Button>
           </DialogClose>
@@ -217,17 +246,13 @@ const DeleteTranslationModal = ({ language, translation, onDelete }: { language:
   );
 };
 
-const UploadTranslationModal = ({
-  onUpload,
-}: {
-  translation: string;
-  onUpload: () => void;
-  onGenerate: (translation: string) => void;
-}) => {
+const UploadTranslationModal = ({ onUpload }: { onUpload: () => void }) => {
   const { isOpen, setOpen } = useDialogStore((state) => ({
     isOpen: state.open[Dialogs.UploadTranslation],
     setOpen: state.setOpen,
   }));
+
+  console.log('isOpen', isOpen);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => setOpen(Dialogs.UploadTranslation, open)} defaultOpen={isOpen} modal>
@@ -261,13 +286,7 @@ const UploadTranslationModal = ({
   );
 };
 
-const GenerateWithAIModal = ({
-  translation,
-  onGenerate,
-}: {
-  translation: string;
-  onGenerate: (translation: string, options?: { context?: string; translateKeys?: boolean }) => void;
-}) => {
+const GenerateWithAIModal = ({ onGenerate }: { onGenerate: (context?: string, translateKeys?: boolean) => void }) => {
   const { isOpen, setOpen } = useDialogStore((state) => ({
     isOpen: state.open[Dialogs.GenerateTranslation],
     setOpen: state.setOpen,
@@ -334,10 +353,7 @@ const GenerateWithAIModal = ({
         </span>
         <DialogFooter className="sm:justify-start mt-4">
           <DialogClose asChild>
-            <Button
-              onClick={() => onGenerate(translation, { context: translationContext, translateKeys })}
-              type="button"
-            >
+            <Button onClick={() => onGenerate(translationContext, translateKeys)} type="button">
               Generate
             </Button>
           </DialogClose>
