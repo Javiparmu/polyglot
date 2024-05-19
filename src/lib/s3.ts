@@ -8,12 +8,20 @@ import {
 } from '@aws-sdk/client-s3';
 import { Config } from './config';
 
+const s3ParamsMissing = (config: Config) =>
+  !config.aws.bucket || !config.aws.region || !config.aws.accessKey || !config.aws.secretKey;
+
 export class S3Service {
   private s3: S3Client;
   private prefix: string;
 
   constructor(private readonly config: Config) {
     this.prefix = config.aws.prefix ? config.aws.prefix + '/' : '';
+
+    if (s3ParamsMissing(config)) {
+      this.s3 = new S3Client({});
+      return;
+    }
 
     this.s3 = new S3Client({
       region: config.aws.region,
@@ -54,12 +62,7 @@ export class S3Service {
   }
 
   async listObjects() {
-    if (
-      !this.config.aws.bucket ||
-      !this.config.aws.region ||
-      !this.config.aws.accessKey ||
-      !this.config.aws.secretKey
-    ) {
+    if (s3ParamsMissing(this.config)) {
       return [];
     }
 
