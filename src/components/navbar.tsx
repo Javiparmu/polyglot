@@ -76,7 +76,7 @@ const Navbar = () => {
     <header className="hidden lg:flex h-[60px] items-center justify-between border-b px-6">
       <div className="flex items-center gap-2 font-semibold">
         <Logo className="h-8 w-8 stroke-secondary-hover" />
-        <span className="">Translation Checker</span>
+        <span className="">Polyglot</span>
       </div>
       <div className="flex items-center gap-4">
         <SettingsDrawer />
