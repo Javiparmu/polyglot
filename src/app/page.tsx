@@ -9,7 +9,7 @@ export default async function Home() {
       <Navbar />
       <FullPageLoader />
       <Dashboard />
-      {/* <Toaster /> */}
+      <Toaster />
     </div>
   );
 }
