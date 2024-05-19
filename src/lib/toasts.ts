@@ -14,7 +14,9 @@ export const errorToast = (message = 'Something went wrong'): string | number =>
     },
   });
 
-export const successToast = (message = 'Success'): string | number =>
+type ToastPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+
+export const successToast = (message = 'Success', position?: ToastPosition): string | number =>
   toast.success(message, {
     duration: defaultToastDuration,
     style: {
@@ -24,4 +26,5 @@ export const successToast = (message = 'Success'): string | number =>
       fontSize: '0.9rem',
       fontFamily: 'inherit',
     },
+    position: position ?? 'bottom-right',
   });
