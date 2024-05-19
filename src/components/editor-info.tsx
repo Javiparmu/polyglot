@@ -53,9 +53,11 @@ const EditorInfo = ({ onItemClick, language, translation }: EditorInfoProps) => 
   return (
     <Breadcrumb className="flex items-center h-10 gap-8 mb-2 ml-5">
       <BreadcrumbList className="flex items-center">
-        <BreadcrumbItem className="text-slate-500 hover:text-slate-700 cursor-default">{language}</BreadcrumbItem>
-        <BreadcrumbSeparator className="text-slate-500" />
-        <BreadcrumbItem className="group text-slate-500 hover:text-slate-700 gap-2">
+        <BreadcrumbItem className="text-primary-light hover:text-primary-light-hover cursor-default">
+          {language}
+        </BreadcrumbItem>
+        <BreadcrumbSeparator className="text-primary-light" />
+        <BreadcrumbItem className="group text-primary-light hover:text-primary-light-hover gap-2">
           <div className="flex items-center gap-2">
             {isEditing ? (
               <input
@@ -69,7 +71,7 @@ const EditorInfo = ({ onItemClick, language, translation }: EditorInfoProps) => 
             ) : (
               <span className="flex items-center gap-2" onClick={handleEditClick}>
                 {translationName}
-                <Edit3Icon className="w-4 h-4 text-slate-500 hidden group-hover:block" />
+                <Edit3Icon className="w-4 h-4 text-primary-light hidden group-hover:block" />
               </span>
             )}
           </div>
@@ -77,18 +79,18 @@ const EditorInfo = ({ onItemClick, language, translation }: EditorInfoProps) => 
       </BreadcrumbList>
       {(!isEmpty(missing) || !isEmpty(empty)) && (
         <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-1 rounded-full border-2 border-slate-200">
+          <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-1 rounded-full border-2 border-border">
             <InfoIcon className="w-4 h-4 text-red-400 cursor-pointer" />
             Missing fields
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent className="max-h-56 overflow-y-scroll">
             <DropdownMenuLabel className="text-slate-600">Missing</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {missing.map((field) => (
               <DropdownMenuItem
                 key={field}
                 onClick={() => onItemClick(field)}
-                className="flex items-center justify-between gap-2 text-slate-500 hover:text-slate-700"
+                className="flex items-center justify-between gap-2 text-primary-light hover:text-slate-700"
               >
                 {field}
                 <PlusIcon className="w-4 h-4" />
@@ -99,7 +101,7 @@ const EditorInfo = ({ onItemClick, language, translation }: EditorInfoProps) => 
             {empty.map((field) => (
               <DropdownMenuItem
                 key={field}
-                className="flex items-center justify-between gap-2 text-slate-500 hover:text-slate-700"
+                className="flex items-center justify-between gap-2 text-primary-light hover:text-slate-700"
               >
                 {field}
               </DropdownMenuItem>

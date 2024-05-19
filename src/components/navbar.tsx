@@ -86,7 +86,7 @@ const Navbar = () => {
           <Button
             disabled={loading}
             onClick={onUpdateTranslations}
-            className="bg-accent hover:bg-accent-hover dark:bg-blue-400 dark:hover:bg-blue-300 text-base px-6"
+            className="bg-secondary hover:bg-secondary-hover text-base px-6"
           >
             Update
           </Button>
@@ -157,9 +157,7 @@ const UploadTranslationsModal = ({ onConfirm }: { onConfirm: () => void }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-accent hover:bg-accent-hover dark:bg-blue-400 dark:hover:bg-blue-300 text-base px-6">
-          Update
-        </Button>
+        <Button className="bg-secondary hover:bg-secondary-hover text-base px-6">Update</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[450px]">
         <DialogHeader>
@@ -168,11 +166,7 @@ const UploadTranslationsModal = ({ onConfirm }: { onConfirm: () => void }) => {
         </DialogHeader>
         <DialogFooter className="sm:justify-start mt-4">
           <DialogClose asChild>
-            <Button
-              onClick={onConfirm}
-              className="bg-accent hover:bg-accent-hover dark:bg-blue-400 dark:hover:bg-blue-300"
-              type="submit"
-            >
+            <Button onClick={onConfirm} className="bg-secondary hover:bg-secondary-hover" type="submit">
               Update
             </Button>
           </DialogClose>

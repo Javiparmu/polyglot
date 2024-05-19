@@ -8,7 +8,7 @@ export async function Dashboard() {
   return (
     <main className="flex flex-1 min-h-0 overflow-hidden">
       <Sidebar translationData={translations} />
-      <section className="flex flex-1 min-h-0 h-[calc(100vh-60px)] overflow-y-auto py-4 px-4">
+      <section className="flex flex-1 min-h-0 h-[calc(100vh-60px)] overflow-y-auto py-4 px-4 bg-background-primary-light">
         <TranslationEditor />
       </section>
     </main>

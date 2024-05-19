@@ -23,7 +23,7 @@ const config = {
         ring: 'hsl(var(--ring))',
         background: {
           DEFAULT: 'hsl(var(--background))',
-          secondary: 'hsl(var(--background-primary-light))',
+          secondary: 'hsl(var(--background-secondary))',
         },
         foreground: 'hsl(var(--foreground))',
         primary: {
@@ -35,8 +35,8 @@ const config = {
           },
         },
         secondary: {
-          DEFAULT: 'hsl(var(--primary-light))',
-          hover: 'hsl(var(--primary-light-hover))',
+          DEFAULT: 'hsl(var(--secondary))',
+          hover: 'hsl(var(--secondary-hover))',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',

@@ -134,8 +134,8 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
                 });
               }}
               className={`
-                group flex w-full justify-between pl-6 ${missingTranslations[language].includes(translation) ? 'text-red-500' : ''}
-                ${!isEmpty(missing[translation]?.empty) || !isEmpty(missing[translation]?.missing) ? 'text-orange-400' : ''}
+                group flex w-full justify-between pl-6 ${missingTranslations[language].includes(translation) ? 'text-red-500 dark:text-red-400' : ''}
+                ${!isEmpty(missing[translation]?.empty) || !isEmpty(missing[translation]?.missing) ? 'text-orange-400 dark:text-orange-300' : ''}
               `}
             >
               {translation}
@@ -144,7 +144,7 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
                   setTranslationToDelete(translation);
                   setOpen(Dialogs.DeleteTranslation, true);
                 }}
-                className="h-4 w-4 text-transparent hover:text-gray-500 group-hover:text-gray-400"
+                className="h-4 w-4 text-transparent hover:text-primary-light group-hover:text-primary-light-hover"
               />
             </Button>
           ))}
@@ -153,14 +153,14 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
             <Button
               variant="ghost"
               size="sm"
-              className="group flex w-full justify-between pl-6 text-red-500 hover:bg-red-100 hover:text-red-700"
+              className="group flex w-full justify-between pl-6 text-red-500 dark:text-red-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-50 dark:hover:text-red-600"
               onClick={() => {
                 setTranslationToCreate(translation);
                 setOpen(Dialogs.UploadTranslation, true);
               }}
             >
               {translation}
-              <span className="flex items-center text-transparent group-hover:text-red-600 transition-all duration-300">
+              <span className="flex items-center text-transparent group-hover:text-red-600 dark:group-hover:text-red-500 transition-all duration-300">
                 AI
                 <UploadIcon className="h-4 w-4 ml-2" />
               </span>
@@ -211,7 +211,7 @@ const AddTranslationButton = ({ language }: { language: string }) => {
       onClick={onAddTranslation}
       className="group flex w-full items-center justify-center h-7"
     >
-      <PlusIcon className="h-4 w-4 text-blue-600 group-hover:text-blue-500" />
+      <PlusIcon className="h-4 w-4 text-secondary group-hover:text-secondary-hover" />
     </Button>
   );
 };
@@ -231,7 +231,11 @@ const DeleteTranslationModal = ({ onDelete }: { onDelete: () => void }) => {
         </DialogHeader>
         <DialogFooter className="sm:justify-start mt-4">
           <DialogClose asChild>
-            <Button onClick={onDelete} className="bg-blue-600 hover:bg-blue-500" type="submit">
+            <Button
+              onClick={onDelete}
+              className="bg-accent hover:bg-accent-hover dark:bg-blue-400 dark:hover:bg-blue-300"
+              type="submit"
+            >
               Delete
             </Button>
           </DialogClose>
@@ -252,8 +256,6 @@ const UploadTranslationModal = ({ onUpload }: { onUpload: () => void }) => {
     setOpen: state.setOpen,
   }));
 
-  console.log('isOpen', isOpen);
-
   return (
     <Dialog open={isOpen} onOpenChange={(open) => setOpen(Dialogs.UploadTranslation, open)} defaultOpen={isOpen} modal>
       <DialogContent className="sm:max-w-[450px]">
@@ -265,7 +267,11 @@ const UploadTranslationModal = ({ onUpload }: { onUpload: () => void }) => {
         </DialogHeader>
         <DialogFooter className="sm:justify-start mt-4">
           <DialogClose asChild>
-            <Button onClick={onUpload} className="bg-blue-600 hover:bg-blue-500" type="submit">
+            <Button
+              onClick={onUpload}
+              className="bg-accent hover:bg-accent-hover dark:bg-blue-400 dark:hover:bg-blue-300"
+              type="submit"
+            >
               Upload
             </Button>
           </DialogClose>
