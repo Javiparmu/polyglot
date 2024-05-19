@@ -60,7 +60,7 @@ export class S3Service {
 
     const params = {
       Bucket: this.config.aws.bucket,
-      Prefix: this.config.aws.prefix,
+      Prefix: this.prefix,
     };
 
     const command = new ListObjectsV2Command(params);
