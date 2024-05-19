@@ -75,12 +75,12 @@ const Navbar = () => {
   return (
     <header className="hidden lg:flex h-[60px] items-center justify-between border-b px-6">
       <div className="flex items-center gap-2 font-semibold">
-        <Logo className="h-8 w-8 stroke-accent-hover dark:stroke-blue-300" />
+        <Logo className="h-8 w-8 stroke-secondary-hover" />
         <span className="">Translation Checker</span>
       </div>
       <div className="flex items-center gap-4">
-        <ThemeToggle />
         <SettingsDrawer />
+        <ThemeToggle />
         <UploadTranslationsButton languages={languages} />
         {canUpdate ? (
           <Button

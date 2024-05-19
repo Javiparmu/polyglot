@@ -31,7 +31,7 @@ const config = {
           foreground: 'hsl(var(--primary-foreground))',
           light: {
             DEFAULT: 'hsl(var(--primary-light))',
-            foreground: 'hsl(var(--primary-light-foreground))',
+            hover: 'hsl(var(--primary-light-hover))',
           },
         },
         secondary: {
