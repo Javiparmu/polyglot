@@ -1,6 +1,6 @@
-# Translation Checker
+# Polyglot
 
-Translation Checker is a web application built with Next.js 14 for managing translations. The application allows you to edit translations directly on the web, identify missing fields in each language, generate translations with AI, and update them directly in Amazon S3.
+Polyglot is a web application built with Next.js 14 for managing translations. The application allows you to edit translations directly on the web, identify missing fields in each language, generate translations with AI, and update them directly in Amazon S3.
 
 ## Features
 
