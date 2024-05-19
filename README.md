@@ -27,7 +27,7 @@ To use the app, just go to https://polyglot.vercel.app, set up your AWS and Open
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/translation-checker.git
+   git clone https://github.com/javiparmu/polyglot.git
    cd polyglot
    ```
 

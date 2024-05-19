@@ -8,11 +8,10 @@ import pLimit from 'p-limit';
 
 const defaultConcurrency = 10;
 
-const config = JSON.parse(cookies().get('config')?.value || '{}');
-
-const s3Service = new S3Service(JSON.parse(cookies().get('config')?.value || '{}'));
-
 export const getTranslations = async (): Promise<Translation> => {
+  const config = JSON.parse(cookies().get('config')?.value || '{}');
+
+  const s3Service = new S3Service(config);
   const listObjects = await s3Service.listObjects();
 
   if (!listObjects) {

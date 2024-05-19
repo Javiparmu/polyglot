@@ -8,26 +8,25 @@ import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 
-const config: Config = JSON.parse(cookies().get('config')?.value || '{}');
-
-const openai = new OpenAI({
-  apiKey: config.openai.apiKey ?? '',
-  project: config.openai.projectId ?? '',
-});
-
-const instructionMessage: ChatCompletionMessageParam = {
-  role: 'system',
-  content: generateTranslationIntruction,
-};
-
-const s3Service = new S3Service(config);
-
 export const generateTranslation = async (
   oldLanguage: string,
   newLanguage: string,
   translation: string,
   options?: { context?: string; translateKeys?: boolean },
 ): Promise<void> => {
+  const config: Config = JSON.parse(cookies().get('config')?.value || '{}');
+
+  const openai = new OpenAI({
+    apiKey: config.openai.apiKey ?? '',
+    project: config.openai.projectId ?? '',
+  });
+
+  const instructionMessage: ChatCompletionMessageParam = {
+    role: 'system',
+    content: generateTranslationIntruction,
+  };
+
+  const s3Service = new S3Service(config);
   const translationData = JSON.parse(await s3Service.getObject(`${oldLanguage}/${translation}.json`));
 
   let response: OpenAI.Chat.Completions.ChatCompletion;

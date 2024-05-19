@@ -9,9 +9,11 @@ import { cookies } from 'next/headers';
 
 const defaultConcurrency = 10;
 
-const s3Service = new S3Service(JSON.parse(cookies().get('config')?.value || '{}'));
-
 export const updateTranslations = async (translations: Translation) => {
+  const config = JSON.parse(cookies().get('config')?.value || '{}');
+
+  const s3Service = new S3Service(config);
+
   const limit = pLimit(
     process.env.S3_UPLOAD_CONCURRENCY ? Number(process.env.S3_UPLOAD_CONCURRENCY) : defaultConcurrency,
   );
@@ -35,8 +37,10 @@ export const updateTranslations = async (translations: Translation) => {
 };
 
 export const updateTranslationName = async (language: string, oldName: string, newName: string) => {
-  await s3Service.copyObject(`${language}/${oldName}.json`, `${language}/${newName}.json`);
+  const config = JSON.parse(cookies().get('config')?.value || '{}');
 
+  const s3Service = new S3Service(config);
+  await s3Service.copyObject(`${language}/${oldName}.json`, `${language}/${newName}.json`);
   await s3Service.deleteObject(`${language}/${oldName}.json`);
 
   revalidateTag('translations');
