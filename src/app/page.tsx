@@ -6,8 +6,8 @@ import { Toaster } from 'sonner';
 export default async function Home() {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* <Navbar />
-      <FullPageLoader />
+      <Navbar />
+      {/* <FullPageLoader />
       <Dashboard />
       <Toaster /> */}
     </div>
