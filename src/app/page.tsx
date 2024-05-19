@@ -8,8 +8,8 @@ export default async function Home() {
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <FullPageLoader />
-      {/* <Dashboard />
-      <Toaster /> */}
+      <Dashboard />
+      {/* <Toaster /> */}
     </div>
   );
 }
