@@ -14,7 +14,7 @@ export const getTranslations = async (): Promise<Translation> => {
   const s3Service = new S3Service(config);
   const listObjects = await s3Service.listObjects();
 
-  if (!listObjects) {
+  if (!listObjects || listObjects.length === 0) {
     return {} as Translation;
   }
 
