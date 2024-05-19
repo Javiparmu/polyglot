@@ -1,6 +1,6 @@
 'use server';
 
-import { Config } from '@/lib/config';
+import { Config, defaultConfig } from '@/lib/config';
 import { generateTranslationIntruction } from '@/lib/openAi';
 import { S3Service } from '@/lib/s3';
 import { revalidateTag } from 'next/cache';
@@ -14,7 +14,8 @@ export const generateTranslation = async (
   translation: string,
   options?: { context?: string; translateKeys?: boolean },
 ): Promise<void> => {
-  const config: Config = JSON.parse(cookies().get('config')?.value || '{}');
+  const cookiesConfig = cookies().get('config')?.value;
+  const config: Config = cookiesConfig ? JSON.parse(cookiesConfig) : defaultConfig;
 
   const openai = new OpenAI({
     apiKey: config.openai.apiKey ?? '',

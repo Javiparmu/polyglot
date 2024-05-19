@@ -1,3 +1,4 @@
+import { defaultConfig } from '@/lib/config';
 import { formatJson } from '@/lib/helpers';
 import { S3Service } from '@/lib/s3';
 import { Translation } from '@/lib/types';
@@ -7,7 +8,8 @@ import pLimit from 'p-limit';
 const defaultConcurrency = 10;
 
 export const getTranslations = async (): Promise<Translation> => {
-  const config = JSON.parse(cookies().get('config')?.value || '{}');
+  const cookiesConfig = cookies().get('config')?.value;
+  const config = cookiesConfig ? JSON.parse(cookiesConfig) : defaultConfig;
 
   const s3Service = new S3Service(config);
   const listObjects = await s3Service.listObjects();

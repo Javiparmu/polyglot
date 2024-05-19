@@ -6,11 +6,13 @@ import { revalidateTag } from 'next/cache';
 import pLimit from 'p-limit';
 import { S3Service } from '@/lib/s3';
 import { cookies } from 'next/headers';
+import { defaultConfig } from '@/lib/config';
 
 const defaultConcurrency = 10;
 
 export const updateTranslations = async (translations: Translation) => {
-  const config = JSON.parse(cookies().get('config')?.value || '{}');
+  const cookiesConfig = cookies().get('config')?.value;
+  const config = cookiesConfig ? JSON.parse(cookiesConfig) : defaultConfig;
 
   const s3Service = new S3Service(config);
 
@@ -37,7 +39,8 @@ export const updateTranslations = async (translations: Translation) => {
 };
 
 export const updateTranslationName = async (language: string, oldName: string, newName: string) => {
-  const config = JSON.parse(cookies().get('config')?.value || '{}');
+  const cookiesConfig = cookies().get('config')?.value;
+  const config = cookiesConfig ? JSON.parse(cookiesConfig) : defaultConfig;
 
   const s3Service = new S3Service(config);
   await s3Service.copyObject(`${language}/${oldName}.json`, `${language}/${newName}.json`);

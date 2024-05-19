@@ -4,7 +4,7 @@ export interface Config {
     secretKey: string;
     region: string;
     bucket: string;
-    prefix?: string;
+    prefix: string;
   };
   openai: {
     apiKey: string;
