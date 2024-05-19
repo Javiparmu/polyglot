@@ -83,25 +83,25 @@ const EditorInfo = ({ onItemClick, language, translation }: EditorInfoProps) => 
             <InfoIcon className="w-4 h-4 text-red-400 cursor-pointer" />
             Missing fields
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="max-h-56 overflow-y-scroll">
-            <DropdownMenuLabel className="text-slate-600">Missing</DropdownMenuLabel>
+          <DropdownMenuContent className="max-h-56 overflow-y-scroll bg-background">
+            <DropdownMenuLabel className="text-primary">Missing</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {missing.map((field) => (
               <DropdownMenuItem
                 key={field}
                 onClick={() => onItemClick(field)}
-                className="flex items-center justify-between gap-2 text-primary-light hover:text-slate-700"
+                className="flex items-center justify-between gap-2 text-primary-light hover:text-primary-light-hover"
               >
                 {field}
                 <PlusIcon className="w-4 h-4" />
               </DropdownMenuItem>
             ))}
-            <DropdownMenuLabel className="text-slate-600">Empty</DropdownMenuLabel>
+            <DropdownMenuLabel className="text-primary">Empty</DropdownMenuLabel>
             <DropdownMenuSeparator />
             {empty.map((field) => (
               <DropdownMenuItem
                 key={field}
-                className="flex items-center justify-between gap-2 text-primary-light hover:text-slate-700"
+                className="flex items-center justify-between gap-2 text-primary-light hover:text-primary-light-hover"
               >
                 {field}
               </DropdownMenuItem>
