@@ -7,10 +7,16 @@ import pLimit from 'p-limit';
 const defaultConcurrency = 10;
 
 export const getTranslations = async (): Promise<Translation> => {
+  console.log('getTranslations');
   const config = JSON.parse(cookies().get('config')?.value || '{}');
 
+  console.log('config', config);
+
   const s3Service = new S3Service(config);
+  console.log('s3Service', s3Service);
   const listObjects = await s3Service.listObjects();
+
+  console.log('listObjects', listObjects);
 
   if (!listObjects) {
     return {} as Translation;
