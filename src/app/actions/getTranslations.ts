@@ -1,23 +1,21 @@
 'use server';
 
 import { formatJson } from '@/lib/helpers';
+import { S3Service } from '@/lib/s3';
 import { Translation } from '@/lib/types';
-import { GetObjectCommand, ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import { cookies } from 'next/headers';
 import pLimit from 'p-limit';
 
 const defaultConcurrency = 10;
 
-const s3 = new S3Client({ region: process.env.AWS_REGION });
+const config = JSON.parse(cookies().get('config')?.value || '{}');
+
+const s3Service = new S3Service(JSON.parse(cookies().get('config')?.value || '{}'));
 
 export const getTranslations = async (): Promise<Translation> => {
-  const listObjects = new ListObjectsV2Command({
-    Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-    Prefix: process.env.S3_TRANSLATIONS_KEY,
-  });
+  const listObjects = await s3Service.listObjects();
 
-  const { Contents } = await s3.send(listObjects);
-
-  if (!Contents) {
+  if (!listObjects) {
     return {} as Translation;
   }
 
@@ -28,23 +26,13 @@ export const getTranslations = async (): Promise<Translation> => {
   );
 
   await Promise.all(
-    Contents.map((file) =>
+    listObjects.map((file) =>
       limit(async () => {
-        const getObjectParams = {
-          Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-          Key: file.Key,
-        };
-
-        const { Body } = await s3.send(new GetObjectCommand(getObjectParams));
-
-        if (!Body || !file.Key) {
+        if (!file.Key) {
           return;
         }
 
-        let translationData = '';
-        for await (const chunk of Body as unknown as string) {
-          translationData += chunk;
-        }
+        const translationData = await s3Service.getObject(file.Key);
 
         if (!translationData) {
           return;

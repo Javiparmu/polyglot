@@ -4,11 +4,12 @@ import { Translation } from '@/lib/types';
 import { formatJson } from '@/lib/helpers';
 import { revalidateTag } from 'next/cache';
 import pLimit from 'p-limit';
-import { CopyObjectCommand, DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { S3Service } from '@/lib/s3';
+import { cookies } from 'next/headers';
 
 const defaultConcurrency = 10;
 
-const s3 = new S3Client({ region: process.env.AWS_REGION });
+const s3Service = new S3Service(JSON.parse(cookies().get('config')?.value || '{}'));
 
 export const updateTranslations = async (translations: Translation) => {
   const limit = pLimit(
@@ -20,15 +21,10 @@ export const updateTranslations = async (translations: Translation) => {
       limit(async () => {
         await Promise.all(
           Object.keys(translations[language]).map((translation) => {
-            const putObjectParams = {
-              Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-              Key: `${language}/${translation}.json`,
-              Body: formatJson(translations[language][translation]),
-            };
-
-            const command = new PutObjectCommand(putObjectParams);
-
-            return s3.send(command);
+            return s3Service.putObject(
+              `${language}/${translation}.json`,
+              formatJson(translations[language][translation]),
+            );
           }),
         );
       }),
@@ -39,20 +35,9 @@ export const updateTranslations = async (translations: Translation) => {
 };
 
 export const updateTranslationName = async (language: string, oldName: string, newName: string) => {
-  const copyObjectParams = {
-    Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-    CopySource: `${process.env.S3_TRANSLATIONS_BUCKET}/${language}/${oldName}.json`,
-    Key: `${language}/${newName}.json`,
-  };
+  await s3Service.copyObject(`${language}/${oldName}.json`, `${language}/${newName}.json`);
 
-  await s3.send(new CopyObjectCommand(copyObjectParams));
-
-  const deleteObjectParams = {
-    Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-    Key: `${language}/${oldName}.json`,
-  };
-
-  await s3.send(new DeleteObjectCommand(deleteObjectParams));
+  await s3Service.deleteObject(`${language}/${oldName}.json`);
 
   revalidateTag('translations');
 

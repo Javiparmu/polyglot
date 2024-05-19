@@ -1,20 +1,13 @@
 'use server';
 
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { S3Service } from '@/lib/s3';
 import { revalidateTag } from 'next/cache';
+import { cookies } from 'next/headers';
 
-const s3 = new S3Client({ region: process.env.AWS_REGION });
+const s3Service = new S3Service(JSON.parse(cookies().get('config')?.value || '{}'));
 
 export const createTranslation = async (language: string, translation: string, content = '{}') => {
-  const putObjectParams = {
-    Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-    Key: `${language}/${translation}.json`,
-    Body: content,
-  };
-
-  const command = new PutObjectCommand(putObjectParams);
-
-  await s3.send(command);
+  await s3Service.putObject(`${language}/${translation}.json`, content);
 
   revalidateTag('translations');
 };

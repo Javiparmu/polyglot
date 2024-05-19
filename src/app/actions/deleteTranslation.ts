@@ -1,17 +1,13 @@
 'use server';
 
-import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { S3Service } from '@/lib/s3';
 import { revalidateTag } from 'next/cache';
+import { cookies } from 'next/headers';
 
-const s3 = new S3Client({ region: process.env.AWS_REGION });
+const s3Service = new S3Service(JSON.parse(cookies().get('config')?.value || '{}'));
 
 export const deleteTranslation = async (language: string, translation: string): Promise<void> => {
-  const deleteObjectParams = {
-    Bucket: process.env.S3_TRANSLATIONS_BUCKET,
-    Key: `${language}/${translation}.json`,
-  };
-
-  await s3.send(new DeleteObjectCommand(deleteObjectParams));
+  await s3Service.deleteObject(`${language}/${translation}.json`);
 
   revalidateTag('translations');
 };
