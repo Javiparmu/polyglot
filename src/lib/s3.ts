@@ -54,7 +54,12 @@ export class S3Service {
   }
 
   async listObjects() {
-    if (!this.config.aws.bucket) {
+    if (
+      !this.config.aws.bucket ||
+      !this.config.aws.region ||
+      !this.config.aws.accessKey ||
+      !this.config.aws.secretKey
+    ) {
       return [];
     }
 
