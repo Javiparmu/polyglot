@@ -1,5 +1,3 @@
-'use server';
-
 import { formatJson } from '@/lib/helpers';
 import { S3Service } from '@/lib/s3';
 import { Translation } from '@/lib/types';
