@@ -5,6 +5,7 @@ import { ToolBar } from './tool-bar';
 import { isEmpty } from '@/lib/helpers';
 import { cn } from '@/lib/utils';
 import { useJsonEditor } from '@/app/hooks/useJsonEditor';
+import { useTheme } from 'next-themes';
 
 interface JSONEditorProps {
   value?: string;
@@ -16,6 +17,8 @@ interface JSONEditorProps {
 }
 
 export const JSONEditor = ({ value, defaultValue, schemaValue, path = '', onChange }: JSONEditorProps) => {
+  const { theme } = useTheme();
+
   const {
     handleEditorDidMount,
     handleEditorWillMount,
@@ -52,6 +55,7 @@ export const JSONEditor = ({ value, defaultValue, schemaValue, path = '', onChan
         )}
       >
         <Editor
+          theme={theme === 'dark' ? 'vs-dark' : 'light'}
           value={value}
           width="100%"
           language="json"
