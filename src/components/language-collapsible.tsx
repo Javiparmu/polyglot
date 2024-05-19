@@ -153,14 +153,14 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
             <Button
               variant="ghost"
               size="sm"
-              className="group flex w-full justify-between pl-6 text-red-500 dark:text-red-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-50 dark:hover:text-red-600"
+              className="group flex w-full justify-between pl-6 text-red-500 dark:text-red-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-200/20 dark:hover:text-red-400"
               onClick={() => {
                 setTranslationToCreate(translation);
                 setOpen(Dialogs.UploadTranslation, true);
               }}
             >
               {translation}
-              <span className="flex items-center text-transparent group-hover:text-red-600 dark:group-hover:text-red-500 transition-all duration-300">
+              <span className="flex items-center text-transparent group-hover:text-red-600 dark:group-hover:text-red-400 transition-all duration-300">
                 AI
                 <UploadIcon className="h-4 w-4 ml-2" />
               </span>
@@ -231,16 +231,12 @@ const DeleteTranslationModal = ({ onDelete }: { onDelete: () => void }) => {
         </DialogHeader>
         <DialogFooter className="sm:justify-start mt-4">
           <DialogClose asChild>
-            <Button
-              onClick={onDelete}
-              className="bg-accent hover:bg-accent-hover dark:bg-blue-400 dark:hover:bg-blue-300"
-              type="submit"
-            >
+            <Button onClick={onDelete} variant="secondary" type="submit">
               Delete
             </Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button type="button" variant="secondary">
+            <Button type="button" variant="outline">
               Cancel
             </Button>
           </DialogClose>
@@ -267,11 +263,7 @@ const UploadTranslationModal = ({ onUpload }: { onUpload: () => void }) => {
         </DialogHeader>
         <DialogFooter className="sm:justify-start mt-4">
           <DialogClose asChild>
-            <Button
-              onClick={onUpload}
-              className="bg-accent hover:bg-accent-hover dark:bg-blue-400 dark:hover:bg-blue-300"
-              type="submit"
-            >
+            <Button onClick={onUpload} variant="secondary" type="submit">
               Upload
             </Button>
           </DialogClose>
@@ -281,7 +273,6 @@ const UploadTranslationModal = ({ onUpload }: { onUpload: () => void }) => {
                 setOpen(Dialogs.GenerateTranslation, true);
               }}
               type="button"
-              variant="secondary"
             >
               Generate with AI
             </Button>
@@ -314,7 +305,7 @@ const GenerateWithAIModal = ({ onGenerate }: { onGenerate: (context?: string, tr
             AI generation options
             <Tooltip delayDuration={100}>
               <TooltipTrigger asChild>
-                <InfoIcon className="w-5 h-5 text-gray-900" />
+                <InfoIcon className="w-5 h-5 text-primary" />
               </TooltipTrigger>
               <TooltipContent className="text-sm font-light sm:max-w-[350px]">
                 <ul className="mb-4">
@@ -345,14 +336,14 @@ const GenerateWithAIModal = ({ onGenerate }: { onGenerate: (context?: string, tr
         </span>
         <span className="flex items-center gap-2 mt-2">
           <Checkbox
-            className="border-gray-600 hover:border-gray-700"
+            className="border-primary hover:border-primary-light"
             id="translate-keys"
             onCheckedChange={() => setTranslateKeys(!translateKeys)}
             checked={translateKeys}
           />
           <Label
             htmlFor="translate-keys"
-            className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 peer-hover:text-gray-600"
+            className="text-sm font-medium leading-none cursor-pointer peer-disabled:cursor-not-allowed peer-disabled:opacity-70 peer-hover:text-primary-light"
           >
             Translate keys
           </Label>
