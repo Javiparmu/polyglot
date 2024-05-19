@@ -1,4 +1,4 @@
-import { formatObjectToJSON, getMissingTranslations, getTranslationMissingFields } from '@/lib/helpers';
+import { addNestedField, formatObjectToJSON, getMissingTranslations, getTranslationMissingFields } from '@/lib/helpers';
 import { Translation } from '@/lib/types';
 import { tryParse } from '@/lib/helpers';
 import { createWithEqualityFn } from 'zustand/traditional';
@@ -60,10 +60,9 @@ export const useTranslationStore = createWithEqualityFn<TranslationStore>(
           newTranslations[language] = {};
         }
 
-        const newTranslation = {
-          [field]: '',
-          ...tryParse(newTranslations[language][translation]),
-        };
+        const newTranslation = tryParse(newTranslations[language][translation]) ?? {};
+
+        addNestedField(newTranslation, field);
 
         newTranslations[language][translation] = formatObjectToJSON(newTranslation);
 

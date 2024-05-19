@@ -21,15 +21,22 @@ export const tryParse = (json: Record<string, string> | string): Record<string, 
   }
 };
 
-export const addFieldToJson = (json: string, field: string, value = ''): string => {
-  return JSON.stringify(
-    {
-      [field]: value,
-      ...JSON.parse(json),
-    },
-    null,
-    2,
-  );
+export const addNestedField = <T = Record<string, unknown>>(json: Record<string, any>, path: string, value = ''): T => {
+  const keys = path.split('.');
+  let current = json;
+
+  for (let i = 0; i < keys.length; i++) {
+    if (i === keys.length - 1) {
+      current[keys[i]] = value;
+    } else {
+      if (!current[keys[i]]) {
+        current[keys[i]] = {};
+      }
+      current = current[keys[i]];
+    }
+  }
+
+  return { ...json } as T;
 };
 
 type PlainObject = { [key: string]: any };
@@ -65,7 +72,7 @@ export const getTranslationMissingFields = (translations: Translation): Translat
   const languages = Object.keys(translations);
   const missingFields: TranslationMissingFields = {};
 
-  if (languages.length === 0) return {}
+  if (languages.length === 0) return {};
 
   const allCategories = languages.map((lang) => Object.keys(translations[lang]));
   const commonCategories = allCategories.reduce((a, b) => a.filter((c) => b.includes(c)));
