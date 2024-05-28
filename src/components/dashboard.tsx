@@ -2,10 +2,9 @@ import TranslationEditor from '@/components/translation-editor';
 import Sidebar from './sidebar';
 import { getTranslations } from '@/app/actions/getTranslations';
 import { TooltipProvider } from './ui/tooltip';
-import { SettingsIcon } from 'lucide-react';
 
 export async function Dashboard() {
-  const translations = {};
+  const translations = await getTranslations();
 
   return (
     <main className="flex flex-1 min-h-0 overflow-hidden">
