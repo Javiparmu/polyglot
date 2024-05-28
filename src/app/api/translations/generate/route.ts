@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 
-export const maxDuration = 30;
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
