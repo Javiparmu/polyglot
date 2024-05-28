@@ -22,7 +22,7 @@ const Sidebar = ({ translationData }: SidebarProps) => {
   }, [translationData, updateTranslations]);
 
   return (
-    <aside className="hidden lg:flex w-[300px] h-[calc(100vh-60px)] max-h-[calc(100vh-60px)] border-r overflow-x-hidden small-scrollbar">
+    <aside className="hidden lg:flex w-[300px] h-[calc(100vh-60px)] max-h-[calc(100vh-60px)] border-r overflow-x-hidden">
       <nav className="flex flex-col w-full border-gray-200 dark:border-gray-800">
         <div className="flex-1 py-4">
           <ul className="grid gap-1 text-sm">

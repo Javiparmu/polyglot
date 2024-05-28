@@ -87,7 +87,6 @@
 }
 
 @layer utilities {
-  /* Hide scrollbar for Chrome, Safari and Opera */
   .small-scrollbar::-webkit-scrollbar {
     width: 8px;
   }
@@ -96,8 +95,8 @@
     background: hsl(var(--scrollbar-thumb) / 0.5);
     border-radius: 5px;
   }
- /* Hide scrollbar for IE, Edge and Firefox */
+  
   .small-scrollbar {
-    scrollbar-width: 8px;  /* Firefox */
+    scrollbar-width: 8px;
   }
 }

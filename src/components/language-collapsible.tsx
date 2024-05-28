@@ -109,7 +109,12 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
   console.log('LanguageCollapsible', Object.keys(translations[language]));
 
   return (
-    <Collapsible open={isOpen} onOpenChange={(open) => onToggle(open)} defaultOpen className="space-y-2 w-[268px]">
+    <Collapsible
+      open={isOpen}
+      onOpenChange={(open) => onToggle(open)}
+      defaultOpen
+      className="space-y-2 w-[268px] bg-background"
+    >
       <div className="flex items-center justify-between space-x-4 px-4">
         <h4 className="flex items-center gap-2 text-base font-semibold">
           <Flag language={language} className="w-4 h-4" />
@@ -122,25 +127,25 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
           </Button>
         </CollapsibleTrigger>
       </div>
-      <CollapsibleContent className="overflow-scroll small-scrollbar max-h-[calc(100vh-260px)]">
+      <CollapsibleContent className="overflow-y-scroll small-scrollbar max-h-[calc(100vh-260px)]">
+        <AddTranslationButton language={language} />
         {missingTranslations[language]?.map((translation) => (
-          <div key={language + translation} className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="group flex w-full justify-between pl-6 text-red-500 dark:text-red-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-200/20 dark:hover:text-red-400"
-              onClick={() => {
-                setTranslationToCreate(translation);
-                setOpen(Dialogs.UploadTranslation, true);
-              }}
-            >
-              {translation}
-              <span className="flex items-center text-transparent group-hover:text-red-600 dark:group-hover:text-red-400 transition-all duration-300">
-                AI
-                <UploadIcon className="h-4 w-4 ml-2" />
-              </span>
-            </Button>
-          </div>
+          <Button
+            key={language + translation}
+            variant="ghost"
+            size="sm"
+            className="group flex w-full justify-between pl-6 text-red-500 dark:text-red-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-200/20 dark:hover:text-red-400"
+            onClick={() => {
+              setTranslationToCreate(translation);
+              setOpen(Dialogs.UploadTranslation, true);
+            }}
+          >
+            {translation}
+            <span className="flex items-center text-transparent group-hover:text-red-600 dark:group-hover:text-red-400 transition-all duration-300">
+              AI
+              <UploadIcon className="h-4 w-4 ml-2" />
+            </span>
+          </Button>
         ))}
         {Object.keys(translations[language])
           .sort()
@@ -170,7 +175,6 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
               />
             </Button>
           ))}
-
         <input
           ref={fileInputRef}
           accept=".json"
@@ -182,7 +186,6 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
             });
           }}
         />
-        <AddTranslationButton language={language} />
         {translationToCreate && <GenerateWithAIModal onGenerate={onGenerateTranslation} />}
         {translationToCreate && <UploadTranslationModal onUpload={onTranslationUpload} />}
         {translationToDelete && <DeleteTranslationModal onDelete={onTranslationDelete} />}
