@@ -4,15 +4,16 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 
-export const maxDuration = 60;
-
-const instructionMessage: ChatCompletionMessageParam = {
-  role: 'system',
-  content: generateTranslationIntruction,
-};
+export const maxDuration = 30;
+export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   const { oldLanguage, newLanguage, translation, options, config } = await request.json();
+
+  const instructionMessage: ChatCompletionMessageParam = {
+    role: 'system',
+    content: generateTranslationIntruction,
+  };
 
   const openai = new OpenAI({
     apiKey: config.openai.apiKey ?? '',
