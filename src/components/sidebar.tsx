@@ -24,8 +24,8 @@ const Sidebar = ({ translationData }: SidebarProps) => {
   return (
     <aside className="hidden w-[300px] border-r lg:flex">
       <nav className="flex flex-col w-[300px] border-gray-200 dark:border-gray-800">
-        <div className="flex-1 overflow-auto py-4">
-          <ul className="grid gap-1 text-sm">
+        <div className="flex-1 overflow-y-scroll max-h-[calc(100vw - 60px)] py-4">
+          <ul className="grid gap-1 text-sm max-h-[450px] overflow-y-scroll">
             {languages.sort().map((lang) => (
               <li key={lang} className="px-4">
                 <LanguageCollapsible
