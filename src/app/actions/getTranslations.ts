@@ -12,7 +12,7 @@ export const getTranslations = async (): Promise<Translation> => {
   const config = cookiesConfig ? JSON.parse(cookiesConfig) : defaultConfig;
 
   const s3Service = new S3Service(config);
-  const listObjects = await s3Service.listObjects();
+  const { listObjects, prefix } = await s3Service.listObjects();
 
   if (!listObjects || listObjects.length === 0) {
     return {} as Translation;
@@ -27,11 +27,13 @@ export const getTranslations = async (): Promise<Translation> => {
   await Promise.all(
     listObjects.map((file) =>
       limit(async () => {
-        if (!file.Key) {
+        const fileKey = file.Key?.replace(prefix, '');
+
+        if (!fileKey) {
           return;
         }
 
-        const translationData = await s3Service.getObject(file.Key);
+        const translationData = await s3Service.getObject(fileKey);
 
         if (!translationData) {
           return;
@@ -39,9 +41,9 @@ export const getTranslations = async (): Promise<Translation> => {
 
         translations = {
           ...translations,
-          [file.Key.split('/')[0]]: {
-            ...translations[file.Key.split('/')[0]],
-            [file.Key.split('/')[1].split('.')[0]]: formatJson(translationData),
+          [fileKey.split('/')[0]]: {
+            ...translations[fileKey.split('/')[0]],
+            [fileKey.split('/')[1].split('.')[0]]: formatJson(translationData),
           },
         };
       }),

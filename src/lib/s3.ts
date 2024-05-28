@@ -52,18 +52,25 @@ export class S3Service {
 
     const command = new GetObjectCommand(params);
 
-    const { Body } = await this.s3.send(command);
+    try {
+      const { Body } = await this.s3.send(command);
 
-    if (!Body) {
+      if (!Body) {
+        return '';
+      }
+
+      return Body.transformToString();
+    } catch (err) {
       return '';
     }
-
-    return Body.transformToString();
   }
 
   async listObjects() {
     if (s3ParamsMissing(this.config)) {
-      return [];
+      return {
+        listObjects: [],
+        prefix: this.prefix,
+      };
     }
 
     const params = {
@@ -75,7 +82,10 @@ export class S3Service {
 
     const { Contents } = await this.s3.send(command);
 
-    return Contents;
+    return {
+      listObjects: Contents,
+      prefix: this.prefix,
+    };
   }
 
   async copyObject(sourceKey: string, destinationKey: string) {
