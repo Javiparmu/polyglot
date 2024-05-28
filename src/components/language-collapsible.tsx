@@ -28,6 +28,7 @@ import { Dialogs, useDialogStore } from '@/app/store/useDialogStore';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 import { useLoaderStore } from '@/app/store/useLoaderStore';
 import { createTranslation } from '@/app/actions/createTranslation';
+import { cn } from '@/lib/utils';
 
 interface LanguageCollapsibleProps {
   language: string;
@@ -105,8 +106,10 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
     successToast('Translation generated');
   };
 
+  console.log('LanguageCollapsible', Object.keys(translations[language]));
+
   return (
-    <Collapsible open={isOpen} onOpenChange={(open) => onToggle(open)} defaultOpen className="space-y-2">
+    <Collapsible open={isOpen} onOpenChange={(open) => onToggle(open)} defaultOpen className="space-y-2 w-[268px]">
       <div className="flex items-center justify-between space-x-4 px-4">
         <h4 className="flex items-center gap-2 text-base font-semibold">
           <Flag language={language} className="w-4 h-4" />
@@ -119,7 +122,26 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
           </Button>
         </CollapsibleTrigger>
       </div>
-      <CollapsibleContent className="">
+      <CollapsibleContent className="overflow-scroll small-scrollbar max-h-[calc(100vh-260px)]">
+        {missingTranslations[language]?.map((translation) => (
+          <div key={language + translation} className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="group flex w-full justify-between pl-6 text-red-500 dark:text-red-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-200/20 dark:hover:text-red-400"
+              onClick={() => {
+                setTranslationToCreate(translation);
+                setOpen(Dialogs.UploadTranslation, true);
+              }}
+            >
+              {translation}
+              <span className="flex items-center text-transparent group-hover:text-red-600 dark:group-hover:text-red-400 transition-all duration-300">
+                AI
+                <UploadIcon className="h-4 w-4 ml-2" />
+              </span>
+            </Button>
+          </div>
+        ))}
         {Object.keys(translations[language])
           .sort()
           .map((translation) => (
@@ -148,25 +170,7 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
               />
             </Button>
           ))}
-        {missingTranslations[language]?.map((translation) => (
-          <div key={language + translation} className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="group flex w-full justify-between pl-6 text-red-500 dark:text-red-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-200/20 dark:hover:text-red-400"
-              onClick={() => {
-                setTranslationToCreate(translation);
-                setOpen(Dialogs.UploadTranslation, true);
-              }}
-            >
-              {translation}
-              <span className="flex items-center text-transparent group-hover:text-red-600 dark:group-hover:text-red-400 transition-all duration-300">
-                AI
-                <UploadIcon className="h-4 w-4 ml-2" />
-              </span>
-            </Button>
-          </div>
-        ))}
+
         <input
           ref={fileInputRef}
           accept=".json"

@@ -22,16 +22,16 @@ const Sidebar = ({ translationData }: SidebarProps) => {
   }, [translationData, updateTranslations]);
 
   return (
-    <aside className="hidden w-[300px] border-r lg:flex">
-      <nav className="flex flex-col w-[300px] border-gray-200 dark:border-gray-800">
-        <div className="flex-1 overflow-y-scroll max-h-[calc(100vw - 60px)] py-4">
-          <ul className="grid gap-1 text-sm max-h-[450px] overflow-y-scroll">
+    <aside className="hidden lg:flex w-[300px] h-[calc(100vh-60px)] max-h-[calc(100vh-60px)] border-r overflow-x-hidden small-scrollbar">
+      <nav className="flex flex-col w-full border-gray-200 dark:border-gray-800">
+        <div className="flex-1 py-4">
+          <ul className="grid gap-1 text-sm">
             {languages.sort().map((lang) => (
               <li key={lang} className="px-4">
                 <LanguageCollapsible
                   language={lang}
                   isOpen={isOpen[lang] ?? false}
-                  onToggle={(open: boolean) => setIsOpen((prev) => ({ ...prev, [lang]: open }))}
+                  onToggle={(open: boolean) => setIsOpen({ [lang]: open })}
                 />
               </li>
             ))}
