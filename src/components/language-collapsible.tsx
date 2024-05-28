@@ -125,7 +125,7 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
           </Button>
         </CollapsibleTrigger>
       </div>
-      <CollapsibleContent className="overflow-y-scroll small-scrollbar max-h-[calc(100vh-260px)]">
+      <CollapsibleContent className="overflow-y-scroll overflow-x-hidden small-scrollbar max-h-[calc(100vh-260px)]">
         <AddTranslationButton language={language} />
         {missingTranslations[language]?.map((translation) => (
           <Button
