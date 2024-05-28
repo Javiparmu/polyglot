@@ -15,12 +15,12 @@ const instructionMessage: ChatCompletionMessageParam = {
   content: generateTranslationIntruction,
 };
 
-export const generateTranslation = async (
+export async function generateTranslation(
   oldLanguage: string,
   newLanguage: string,
   translation: string,
   options?: { context?: string; translateKeys?: boolean },
-): Promise<void> => {
+): Promise<void> {
   const cookiesConfig = cookies().get('config')?.value;
   const config: Config = cookiesConfig ? JSON.parse(cookiesConfig) : defaultConfig;
 
@@ -64,4 +64,4 @@ export const generateTranslation = async (
   await s3Service.putObject(`${newLanguage}/${translation}.json`, responseMessage);
 
   revalidateTag('translations');
-};
+}
