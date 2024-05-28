@@ -171,7 +171,7 @@ const UploadTranslationsModal = ({ onConfirm }: { onConfirm: () => void }) => {
             </Button>
           </DialogClose>
           <DialogClose asChild>
-            <Button type="button" variant="secondary">
+            <Button type="button" variant="outline">
               Cancel
             </Button>
           </DialogClose>
