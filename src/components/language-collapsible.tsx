@@ -106,8 +106,6 @@ const LanguageCollapsible = ({ language, isOpen, onToggle }: LanguageCollapsible
     successToast('Translation generated');
   };
 
-  console.log('LanguageCollapsible', Object.keys(translations[language]));
-
   return (
     <Collapsible
       open={isOpen}
