@@ -12,7 +12,7 @@ export const FullPageLoader = () => {
         <div role="status">
           <svg
             aria-hidden="true"
-            className="w-12 h-12 text-secondary animate-spin fill-accent"
+            className="w-12 h-12 text-accent animate-spin fill-secondary"
             viewBox="0 0 100 101"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
