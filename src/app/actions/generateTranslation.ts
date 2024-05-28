@@ -8,6 +8,8 @@ import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 import { ChatCompletionMessageParam } from 'openai/resources/index.mjs';
 
+export const maxDuration = 60;
+
 const instructionMessage: ChatCompletionMessageParam = {
   role: 'system',
   content: generateTranslationIntruction,
@@ -29,8 +31,6 @@ export const generateTranslation = async (
 
   const s3Service = new S3Service(config);
   const translationData = JSON.parse(await s3Service.getObject(`${oldLanguage}/${translation}.json`));
-
-  console.log('translationData', translationData);
 
   let response: OpenAI.Chat.Completions.ChatCompletion;
 
@@ -56,8 +56,6 @@ export const generateTranslation = async (
   }
 
   const responseMessage = response.choices[0].message.content;
-
-  console.log('responseMessage', responseMessage);
 
   if (!responseMessage) {
     throw new Error('Translation failed');
