@@ -14,7 +14,6 @@ export const updateTranslations = async (
   translations: Translation,
   updatedTranslations: { language: string; translation: string }[],
 ) => {
-  console.log('Updating translations', updatedTranslations);
   const cookiesConfig = cookies().get('config')?.value;
   const config = cookiesConfig ? JSON.parse(cookiesConfig) : defaultConfig;
 
