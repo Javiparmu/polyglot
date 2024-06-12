@@ -44,6 +44,7 @@ import { setCookies } from '@/app/actions/setCookies';
 import { getCookies } from '@/app/actions/getCookies';
 import { Config, defaultConfig } from '@/lib/config';
 import { useTheme } from 'next-themes';
+import { revalidateTag } from 'next/cache';
 
 const Navbar = () => {
   const [loading, setLoading] = useState(false);
@@ -195,6 +196,7 @@ const SettingsDrawer = () => {
 
   const onSave = async () => {
     await setCookies('config', JSON.stringify(config));
+    revalidateTag('translations');
 
     successToast('Configuration saved', 'bottom-left');
   };
