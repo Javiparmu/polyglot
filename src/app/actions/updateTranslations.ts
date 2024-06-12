@@ -29,13 +29,7 @@ export const updateTranslations = async (
       limit(async () => {
         await Promise.all(
           Object.keys(translations[language]).map((translation) => {
-            console.log(
-              'Checking',
-              !updatedTranslations.some((t) => t.language === language && t.translation === translation),
-            );
             if (!updatedTranslations.some((t) => t.language === language && t.translation === translation)) return;
-
-            console.log('Uploading');
 
             return s3Service.putObject(
               `${language}/${translation}.json`,
