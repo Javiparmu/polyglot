@@ -21,7 +21,7 @@ interface EditorInfoProps {
 }
 
 const EditorInfo = ({ onItemClick, language, translation }: EditorInfoProps) => {
-  const { missingFields } = useTranslationStore();
+  const missingFields = useTranslationStore((state) => state.missingFields);
   const { missing, empty } = useMemo(
     () => missingFields?.[language]?.[translation] || {},
     [language, translation, missingFields],

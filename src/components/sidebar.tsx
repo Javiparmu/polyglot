@@ -14,7 +14,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ translationData }: SidebarProps) => {
-  const { languages, updateTranslations } = useTranslationStore();
+  const languages = useTranslationStore((state) => state.languages);
+  const updateTranslations = useTranslationStore((state) => state.updateTranslations);
   const [isOpen, setIsOpen] = useState<CollapsibleState>({});
 
   useEffect(() => {

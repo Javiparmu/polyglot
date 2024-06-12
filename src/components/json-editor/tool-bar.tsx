@@ -1,10 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import CommandBar, { CommandBarItem } from './command-bar';
 import CommandButton from './command-button';
-import { CodeIcon, DownloadIcon, Minimize2Icon, UploadIcon } from 'lucide-react';
+import { CodeIcon, Columns2Icon, DownloadIcon, Minimize2Icon, UploadIcon, XIcon } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui/dropdown-menu';
+import { useTranslationStore } from '@/app/store/useTranslationStore';
+import Flag from '../flag';
+import { useResizableStore } from '@/app/store/useResizableStore';
 
 export interface ToolBarProps {
   onMinifyClick: () => void;
@@ -12,8 +16,10 @@ export interface ToolBarProps {
   onAutoPrettifyChange: () => void;
   onDownloadClick: () => void;
   onUploadClick: (fileContent: File) => void;
+  onOpenResizableClick: (targetLanguage: string, value: boolean) => void;
   isAutoPrettifyOn: boolean;
   isValidJson: boolean;
+  isSecondary: boolean;
 }
 
 interface FileUploaderProps {
@@ -62,8 +68,17 @@ export const ToolBar: React.FC<ToolBarProps> = ({
   onAutoPrettifyChange,
   onDownloadClick,
   onUploadClick,
+  onOpenResizableClick,
   isValidJson,
+  isSecondary,
 }) => {
+  const languages = useTranslationStore((state) => state.languages);
+  const { open, setOpen } = useResizableStore();
+  const { language, translation } = useTranslationStore((state) => state.selectedTranslation);
+
+  const resizableLanguage = useMemo(() => open?.[language]?.[translation], [language, translation, open]);
+  const hideResizableButton = useMemo(() => !isSecondary && !!resizableLanguage, [isSecondary, resizableLanguage]);
+
   const items: CommandBarItem[] = [
     {
       key: 'upload',
@@ -113,7 +128,37 @@ export const ToolBar: React.FC<ToolBarProps> = ({
         </CommandButton>
       ),
     },
+    {
+      key: 'resizable',
+      position: 'right',
+      hide: hideResizableButton,
+      onRender: () =>
+        isSecondary ? (
+          <XIcon
+            onClick={() => setOpen(language, resizableLanguage, translation, false)}
+            className="h-5 w-5 text-primary-light hover:text-primary-light-hover cursor-pointer"
+          />
+        ) : (
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <Columns2Icon className="h-5 w-5 text-primary-light hover:text-primary-light-hover" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="border-none" align="end">
+              {languages.map((language) => (
+                <DropdownMenuItem
+                  key={language}
+                  onClick={() => onOpenResizableClick(language, true)}
+                  className="flex items-center gap-2 w-full bg-background cursor-pointer"
+                >
+                  <Flag language={language} className="w-4 h-4" />
+                  {language}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ),
+    },
   ];
 
-  return <CommandBar className="ml-8" items={items} />;
+  return <CommandBar className="ml-8 mr-2" items={items} />;
 };

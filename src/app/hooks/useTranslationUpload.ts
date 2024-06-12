@@ -9,7 +9,7 @@ interface FileUploadProps {
 }
 
 export const useTranslationUpload = ({ onSuccess, onError }: FileUploadProps) => {
-  const { addTranslation } = useTranslationStore();
+  const addTranslation = useTranslationStore((state) => state.addTranslation);
 
   const onTranslationChange = async (
     event: React.ChangeEvent<HTMLInputElement>,

@@ -2,6 +2,8 @@ import { downloadJsonFile, minifyJsonString, prettifyJsonString, parseJsonSchema
 import { BeforeMount, OnMount, OnValidate, useMonaco } from '@monaco-editor/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useToggle } from './useToggle';
+import { useTranslationStore } from '../store/useTranslationStore';
+import { useResizableStore } from '../store/useResizableStore';
 
 interface RefObject {
   _domElement?: HTMLElement;
@@ -21,6 +23,9 @@ export const useJsonEditor = ({ defaultValue, schemaValue, onChange }: JsonEdito
   const [errors, setErrors] = useState<string[]>([]);
   const [isValidJson, setIsValidJson] = useState(true);
   const [isAutoPrettifyOn, toggleAutoPrettifyOn] = useToggle(false);
+
+  const { language, translation } = useTranslationStore((state) => state.selectedTranslation);
+  const setOpen = useResizableStore((state) => state.setOpen);
 
   const editorRef = useRef<RefObject>();
 
@@ -85,22 +90,6 @@ export const useJsonEditor = ({ defaultValue, schemaValue, onChange }: JsonEdito
     defaultValue && handleEditorUpdateValue(prettifyJsonString(defaultValue));
   };
 
-  useEffect(() => {
-    handleEditorUpdateValue(defaultValue);
-  }, [defaultValue, handleEditorUpdateValue]);
-
-  useEffect(() => {
-    handleJsonSchemasUpdate();
-  }, [schemaValue, handleJsonSchemasUpdate]);
-
-  useEffect(() => {
-    updateEditorLayout();
-  }, [updateEditorLayout]);
-
-  useEffect(() => {
-    isAutoPrettifyOn && handleEditorPrettify();
-  }, [isAutoPrettifyOn, handleEditorPrettify]);
-
   const handleEditorValidation: OnValidate = useCallback((markers) => {
     const errorMessage = markers.map(({ startLineNumber, message }) => `line ${startLineNumber}: ${message}`);
     const hasContent = editorRef.current?.getValue();
@@ -139,6 +128,26 @@ export const useJsonEditor = ({ defaultValue, schemaValue, onChange }: JsonEdito
     [isAutoPrettifyOn, handleEditorPrettify, onChange],
   );
 
+  const handleOpenResizableClick = (targetLanguage: string, value: boolean) => {
+    setOpen(language, targetLanguage, translation, value);
+  };
+
+  useEffect(() => {
+    handleEditorUpdateValue(defaultValue);
+  }, [defaultValue, handleEditorUpdateValue]);
+
+  useEffect(() => {
+    handleJsonSchemasUpdate();
+  }, [schemaValue, handleJsonSchemasUpdate]);
+
+  useEffect(() => {
+    updateEditorLayout();
+  }, [updateEditorLayout]);
+
+  useEffect(() => {
+    isAutoPrettifyOn && handleEditorPrettify();
+  }, [isAutoPrettifyOn, handleEditorPrettify]);
+
   return {
     handleEditorWillMount,
     handleEditorDidMount,
@@ -148,6 +157,7 @@ export const useJsonEditor = ({ defaultValue, schemaValue, onChange }: JsonEdito
     handleDownloadClick,
     handleEditorChange,
     handleEditorPrettify,
+    handleOpenResizableClick,
     errors,
     isValidJson,
     isAutoPrettifyOn,

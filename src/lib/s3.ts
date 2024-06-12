@@ -80,12 +80,19 @@ export class S3Service {
 
     const command = new ListObjectsV2Command(params);
 
-    const { Contents } = await this.s3.send(command);
+    try {
+      const { Contents } = await this.s3.send(command);
 
-    return {
-      listObjects: Contents,
-      prefix: this.prefix,
-    };
+      return {
+        listObjects: Contents,
+        prefix: this.prefix,
+      };
+    } catch (err) {
+      return {
+        listObjects: [],
+        prefix: this.prefix,
+      };
+    }
   }
 
   async copyObject(sourceKey: string, destinationKey: string) {

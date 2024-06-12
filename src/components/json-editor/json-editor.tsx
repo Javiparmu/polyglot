@@ -14,9 +14,17 @@ interface JSONEditorProps {
   title?: string;
   path?: string;
   onChange?: (value?: string) => void;
+  isSecondary?: boolean;
 }
 
-export const JSONEditor = ({ value, defaultValue, schemaValue, path = '', onChange }: JSONEditorProps) => {
+export const JSONEditor = ({
+  value,
+  defaultValue,
+  schemaValue,
+  path = '',
+  onChange,
+  isSecondary = false,
+}: JSONEditorProps) => {
   const { theme } = useTheme();
 
   const {
@@ -28,6 +36,7 @@ export const JSONEditor = ({ value, defaultValue, schemaValue, path = '', onChan
     handleMinifyClick,
     handleUploadClick,
     handleEditorPrettify,
+    handleOpenResizableClick,
     isValidJson,
     isAutoPrettifyOn,
     toggleAutoPrettifyOn,
@@ -44,6 +53,8 @@ export const JSONEditor = ({ value, defaultValue, schemaValue, path = '', onChan
         onMinifyClick={handleMinifyClick}
         onPrettifyClick={handleEditorPrettify}
         onUploadClick={handleUploadClick}
+        onOpenResizableClick={handleOpenResizableClick}
+        isSecondary={isSecondary}
       />
       <div
         className={cn(

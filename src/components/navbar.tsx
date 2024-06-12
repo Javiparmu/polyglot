@@ -50,6 +50,7 @@ const Navbar = () => {
   const languages = useTranslationStore((state) => state.languages);
   const missingFields = useTranslationStore((state) => state.missingFields);
   const missingTranslations = useTranslationStore((state) => state.missingTranslations);
+  const updatedTranslations = useTranslationStore((state) => state.updatedTranslations);
 
   const canUpdate = useMemo(
     () => Object.keys(missingFields).length === 0 && Object.keys(missingTranslations).length === 0,
@@ -62,7 +63,7 @@ const Navbar = () => {
     setLoading(true);
 
     try {
-      await updateTranslations(translations);
+      await updateTranslations(translations, updatedTranslations);
 
       successToast('Translations updated');
     } catch (error) {

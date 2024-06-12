@@ -39,6 +39,8 @@ export const getTranslations = async (): Promise<Translation> => {
           return;
         }
 
+        if (!fileKey.split('/')[1].endsWith('.json')) return translations;
+
         translations = {
           ...translations,
           [fileKey.split('/')[0]]: {
